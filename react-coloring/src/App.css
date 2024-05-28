@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Grape+Nuts&display=swap');
+*{
+  font-family: "Roboto", sans-serif;
+}
+html, body, #root, .App{
+  height: 100%;
+  width: 100%;
+  /*background: #00a8e1;*/
+}
+.cc{
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.cr{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+}
+.crsb{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.fh{
+  height:  100%;
+}
+.fw{
+  width: 100%;
+}
+.belt{
+  width: 50%;
+}
+.paper-toolbar h1{
+  line-height: 90%;
+
+}
+.subtitle{
+  font-size: 0.5em;
+  color: #333;
+}

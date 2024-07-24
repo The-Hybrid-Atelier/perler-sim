@@ -1,0 +1,25 @@
+.paper-toolbar-container {
+    display: flex;
+    height: 10vh;
+}
+
+.tools-bar-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 60px; /* Adjust width as needed */
+    background-color: #f0f0f0; /* Adjust background color as needed */
+    padding: 10px;
+    border-right: 1px solid #ccc;
+    position: relative; /* Adjust positioning as needed */
+}
+
+.paper-toolbar {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.tools-bar-vertical button {
+    margin: 10px 0;
+}

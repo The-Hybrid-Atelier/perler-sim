@@ -1,0 +1,20 @@
+.tools-bar {
+    position: absolute;
+    left: 10px; /* Adjust as needed */
+    top: 50px; /* Adjust as needed */
+    background-color: #f0f0f0; /* Adjust as needed */
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .tools-bar button {
+    margin-bottom: 10px;
+  }
+  
+  .tools-bar button:last-child {
+    margin-bottom: 0; /* Remove margin from the last button */
+  }
+

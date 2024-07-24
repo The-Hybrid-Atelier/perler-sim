@@ -1,42 +1,58 @@
 import './PaperCanvas.css';
-import React, { useEffect, useRef} from 'react';
-import {setupPaper} from "../javascripts/Paper.js"
+import React, { useEffect, useRef } from 'react';
+import { setupPaper } from "../javascripts/Paper.js";
+import paper from 'paper';
 
-let paper = require('paper');
+function PaperCanvas({ setPaperReady }) {
+  const canvasRef = useRef(null);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
 
-function PaperCanvas({setScreen, paperReady, setPaperReady}) {
-  
-    const canvasRef = useRef(null);  
-    useEffect(() => {
-      const preventContextMenu = (event) => {
-        event.preventDefault();
-      };
+    const resizeCanvas = () => {
+      // Set canvas dimensions
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    };
 
-      const canvas = canvasRef.current;
-      canvas.addEventListener("contextmenu", preventContextMenu);
-      setupPaper(canvasRef);
-      setPaperReady(true);
-      return () => {
-        canvas.removeEventListener("contextmenu", preventContextMenu);
-      };
-    }, []);
+    const preventContextMenu = (event) => {
+      event.preventDefault();
+    };
 
+    // Initial resize
+    resizeCanvas();
 
-    useEffect(()=>{
-      if(paperReady && paper.project){
-        paper.view.zoom = 1;
-      }
-    }, [paperReady])
-  
-    return (
-     
-      <div id="canvas-wrapper">
-        <canvas ref={canvasRef} resize="true" width="100%" height="100%"/>
-      </div>
- 
-    );
+    // Event listener for window resize
+    window.addEventListener('resize', resizeCanvas);
+
+    // Prevent context menu
+    canvas.addEventListener("contextmenu", preventContextMenu);
+
+    // Setup Paper.js
+    setupPaper(canvasRef);
+    setPaperReady(true);
+
+    return () => {
+      canvas.removeEventListener("contextmenu", preventContextMenu);
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (paper.project) {
+      paper.view.zoom = 1;
+    }
+  }, []);
+
+  return (
+    <div id="canvas-wrapper">
+      <canvas ref={canvasRef} resize="true"/>
+    </div>
+  );
 }
 
-export {PaperCanvas};
+export { PaperCanvas };
+
+
+
 

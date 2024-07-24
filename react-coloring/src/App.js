@@ -8,7 +8,6 @@ import {PaperToolBar} from './components/PaperToolBar.jsx';
 import {View} from './components/View.jsx';
 
 
-
 const START_SCREEN = "paper";
 
 function App() {
@@ -19,7 +18,7 @@ function App() {
     <div className="App">
       {appScreen === "paper" &&
         <View icon="" goToScreen="" screen={appScreen} setScreen={setScreen}>
-          <PaperToolBar paperReady={paperReady} name="Coloring Book"/>
+          <PaperToolBar paperReady={paperReady} name="FuseBlocks"/>
           <PaperCanvas setPaperReady={setPaperReady}/>
         </View>
       }

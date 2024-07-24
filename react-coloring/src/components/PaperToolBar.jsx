@@ -1,114 +1,136 @@
-import React, {useEffect, useState} from 'react';
-
-import { HistoryTracker } from '../interactions/HistoryTracker.jsx';
+import React, { useState, useEffect } from 'react';
 import { ZoomControls } from './ZoomControls.jsx';
 import { PaperControls } from './PaperControls.jsx';
-import {DEFAULT_COLORING_PAGE, MY_NAME, ACTIVE_PROBLEM} from '../AppConfig.jsx';
-import { Dropdown, Form, FormField } from 'semantic-ui-react';
-import { DirectManipulation } from '../interactions/DirectManipulation.jsx';
-import { ColoringPage } from './ColoringPage.jsx';  
-import { ConnectionTool } from '../interactions/ConnectionTool.jsx';
-import { FlowChartScene } from '../scenes/FlowChartScene.jsx';
-import { BucketInteraction } from '../interactions/BucketInteraction.jsx';
-import { RainbowInteraction } from '../interactions/RainbowInteraction.jsx';
-import { MarkingMenuInteraction } from '../interactions/MarkingMenuInteraction.jsx';
-import { ClassicColoring } from '../interactions/ClassicColoring.jsx';
+import { Button } from 'semantic-ui-react';
+import { DirectManipulation, createGrid, createCircularGrid, createHexagonalGrid } from '../interactions/DirectManipulation.jsx';
+import GridSizeSlider from './GridSizeSlider';
+import '../PaperToolBar.css';
+import { fillTool } from '../interactions/FillTool.jsx';
+import BeadSpacingSlider from './BeadSpacingSlider.jsx';
+import { LuPaintBucket } from "react-icons/lu";
+import Ruler from '../javascripts/ruler.js';
+import paper from 'paper';
+import { MdGridOff } from "react-icons/md";
+import { FaRegSquare, FaRegCircle } from "react-icons/fa"; 
+import { FiHexagon } from "react-icons/fi";
+import BeadWidthSlider from "./BeadWidthSlider.jsx"; // Correct import
 
-let _ = require('underscore');
-let paper = require('paper');
+const defaultBeadParameters = {
+  name: "bead",
+  outer_radius: Ruler.mm2pts((4.5 / 2) / 2.5),
+  inner_radius: Ruler.mm2pts((2.8 / 2) / 2.5),
+  fillColor: 'black',
+  strokeColor: 'black',
+  strokeWidth: 0,
+  selectionStrokeWidth: 1
+};
 
-function PaperToolBar({name, paperReady}) {
-    const [activeColoringPage, setActiveColoringPage] = useState(DEFAULT_COLORING_PAGE);
-    const [problem, setProblem] = useState(ACTIVE_PROBLEM);
+const ColorPicker = ({ selectedColor, setSelectedColor }) => {
+  const colors = ['black', 'red', 'blue', 'green', 'yellow'];
 
-    const [redoStack, setRedoStack] = useState([]);
-    const [undoStack, setUndoStack] = useState([]);
+  return (
+    <div>
+      {colors.map(color => (
+        <button
+          key={color}
+          style={{ backgroundColor: color, width: 30, height: 30, margin: 5 }}
+          onClick={() => setSelectedColor(color)}
+        />
+      ))}
+    </div>
+  );
+};
 
+function PaperToolBar({ name, paperReady }) {
+  const [gridSize, setGridSize] = useState(5);
+  const [beadSpacing, setBeadSpacing] = useState(0.5);
+  const [beadParameters, setBeadParameters] = useState(defaultBeadParameters);
+  const [selectedColor, setSelectedColor] = useState('black');
+  const [gridVisible, setGridVisible] = useState(true);
+  const [createGridType, setCreateGridType] = useState('square');
 
-    const setHistory = (previousState, action, inverse) => {
-        setUndoStack((prev)=>[{ previousState, action, inverse }, ...prev]);
-        action();
-        setRedoStack([]);    
+  useEffect(() => {
+    if (paper.project && paper.view) {
+      paper.project.clear();
+      paper.view.zoom = 4;
+      if (createGridType === 'circular') {
+        createCircularGrid(gridSize, beadSpacing, beadParameters);
+      } else if (createGridType === 'hexagonal') {
+        createHexagonalGrid(gridSize, beadSpacing, beadParameters);
+      } else {
+        createGrid(gridSize, beadSpacing, beadParameters);
+      }
     }
-    
-    return (
-        <div className='paper-toolbar fw'>
-            <h1>{name}
-                <br></br>
-                <span className="subtitle"> Problem {problem} - {MY_NAME} </span>
-            </h1>
-            <Form>
-                <FormField>
-                <label>Problem</label>
-                <Dropdown
-                    selection
-                    options={[
-                        { key: 1, text: 'Direct Manipulation', value: 1 },
-                        { key: 2, text: 'Circle Tool', value: 2 },
-                        { key: 3, text: 'Undo/Redo', value: 3 },
-                        { key: 4, text: 'Marking Menu', value: 4 },
-                        { key: 5, text: 'Classic Color', value: 5 },
-                    ]}
-                    value={problem}
-                    onChange={(e, { value }) => setProblem(value)}
-                />
-                </FormField>
-            </Form>
-            
-            {/* DIRECT MANIPULATION */}
-            {problem === 1 && (
-                <div className='belt crsb'>
-                    <DirectManipulation paperReady={paperReady}/>
-                    <ZoomControls></ZoomControls>
-                    <PaperControls activeColoringPage={activeColoringPage}></PaperControls> 
-                </div>
-            )}
+  }, [gridSize, paperReady, beadSpacing, beadParameters, createGridType]);
 
-            {/* CIRCLE TOOL */}
-            {problem === 2 && (
-                <div className='belt crsb'>
-                    <FlowChartScene paperReady={paperReady}/>
-                    <ConnectionTool paperReady={paperReady}/>
-                    <ZoomControls></ZoomControls>
-                    <PaperControls activeColoringPage={activeColoringPage}></PaperControls> 
-                </div>
-            )}
+  const activateFillTool = () => {
+    fillTool(selectedColor);
+  };
 
-            {/* UNDO/REDO */}
-            {problem === 3 && (
-                <div className='belt crsb'>
-                   <ColoringPage paperReady={paperReady} page={activeColoringPage}></ColoringPage>
-                   <BucketInteraction setHistory={setHistory} />
-                   <RainbowInteraction setHistory={setHistory} />
-                   <HistoryTracker paperReady={paperReady} undoStack={undoStack} setUndoStack={setUndoStack} redoStack={redoStack} setRedoStack={setRedoStack} ></HistoryTracker>
-                   <ZoomControls></ZoomControls>
-                   <PaperControls activeColoringPage={activeColoringPage}></PaperControls> 
-                </div>
-            )}
+  const toggleGridVisibility = () => {
+    paper.project.activeLayer.children.forEach(item => {
+      if (item.name === 'gridLine') {
+        item.visible = !gridVisible;
+      }
+    });
+    setGridVisible(!gridVisible);
+  };
 
-            {/* MARKING MENU */}
-            {problem === 4 && (
-                <div className='belt crsb'>
-                   <MarkingMenuInteraction paperReady={paperReady} setHistory={setHistory} />
-                   <ColoringPage paperReady={paperReady} page={activeColoringPage}></ColoringPage>
-                   <ZoomControls></ZoomControls>
-                   <PaperControls activeColoringPage={activeColoringPage}></PaperControls> 
-                </div>
-            )}
+  const createCircularGridButton = () => {
+    setCreateGridType('circular');
+  };
 
-            {/* TESTING */}
-            {problem === 5 && (
-                <div className='belt crsb'>
-                   <ColoringPage paperReady={paperReady} page={activeColoringPage}></ColoringPage>
-                   <BucketInteraction setHistory={setHistory} />
-                   <ClassicColoring paperReady={paperReady}></ClassicColoring>
-                   <ZoomControls></ZoomControls>
-                   <PaperControls activeColoringPage={activeColoringPage}></PaperControls> 
-                </div>
-            )} 
+  const createSquareGridButton = () => {
+    setCreateGridType('square');
+  };
 
+  const createHexagonalGridButton = () => {
+    setCreateGridType('hexagonal');
+  };
+
+  return (
+    <div className='paper-toolbar-container'>
+      <div className='paper-toolbar fw'>
+        <h1>{name}</h1>
+
+        <GridSizeSlider gridSize={gridSize} setGridSize={setGridSize} />
+        <BeadSpacingSlider beadSpacing={beadSpacing} setBeadSpacing={setBeadSpacing} />
+        <BeadWidthSlider beadParameters={beadParameters} setBeadParameters={setBeadParameters} />
+        <ColorPicker selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
+
+        <div className="button-group">
+          <Button icon onClick={activateFillTool}><LuPaintBucket /></Button>
+          <Button icon onClick={toggleGridVisibility}><MdGridOff /></Button>
+          <Button icon onClick={createSquareGridButton}><FaRegSquare /></Button>
+          <Button icon onClick={createCircularGridButton}><FaRegCircle /></Button>
+          <Button icon onClick={createHexagonalGridButton}><FiHexagon /></Button> 
         </div>
-    );
-}    
 
-export {PaperToolBar};
+        <ZoomControls />
+        <PaperControls gridSize={gridSize} beadSpacing={beadSpacing} />
+        <DirectManipulation
+          paperReady={paperReady}
+          selectedColor={selectedColor}
+          gridSize={gridSize}
+          beadSpacing={beadSpacing}
+          beadParameters={beadParameters}
+          createGridType={createGridType}
+        />
+      </div>
+    </div>
+  );
+}
+
+export { PaperToolBar };
+
+
+
+
+
+
+
+
+
+
+
+

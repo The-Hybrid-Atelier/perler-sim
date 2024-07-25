@@ -7,7 +7,7 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import { BEAD_COLORS, BEAD_COLORS_NAMES } from '../AppConfig.jsx';
 
-const PaperControls = ({  selectedColor }) => {
+const PaperControls = ({  selectedColor, version, projectName }) => {
   const trashInteraction = () => {
     paper.project.clear();
   };
@@ -37,7 +37,7 @@ const PaperControls = ({  selectedColor }) => {
     
     const colorIndex = BEAD_COLORS.findIndex(element => element === selectedColor);
     const colorName = BEAD_COLORS_NAMES[colorIndex];
-    const filename = `${colorName}.svg`;
+    const filename = `${projectName.toLowerCase().replace(/\s+/g, '_')}_${colorName}_${version}.svg`;
 
     var beadsToRemove = paper.project.getItems({
       name: 'bead',

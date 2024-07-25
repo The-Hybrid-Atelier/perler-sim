@@ -1,6 +1,6 @@
 import { useState } from 'react';
 // STYLE LIBRARIES
-import { Button, ButtonGroup, Label} from 'semantic-ui-react';
+import { Button, ButtonGroup, Label, Input} from 'semantic-ui-react';
 import { FaRegSquare, FaRegCircle } from "react-icons/fa"; 
 import { FiHexagon } from "react-icons/fi";
 import { LuPaintBucket } from "react-icons/lu";
@@ -47,6 +47,8 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
     const setCreateGridType = (value)=>setBeadParameters({...beadParameters, createGridType: value});
     const setThickness = (value)=>setBeadParameters({...beadParameters, thickness: value, inner_radius: beadParameters.outer_radius - value});
     const [currentTool, setCurrentTool] = useState('beadTool');
+    const [projectName, setProjectName] = useState('MyBeadProject');
+    const [version, setVersion] = useState("1");
 
     useEffect(() => { 
       if(paper){
@@ -72,8 +74,14 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
          
         {/* TOOLS */}
         <ToolBarSubMenu id="Tools" name='Tools'>
+          <LabeledParameter label='Project Name'>
+            <Input type="text" value={projectName} onChange={(e)=>setProjectName(e.target.value)}/>
+          </LabeledParameter>
+          <LabeledParameter label='Version'>
+            <Input type="number" value={version} onChange={(e)=>setVersion(e.target.value)}/>
+          </LabeledParameter>
           <LabeledParameter label='Controls'>
-            <PaperControls selectedColor={selectedColor}/>
+            <PaperControls projectName={projectName} version={version} selectedColor={selectedColor}/>
           </LabeledParameter>
           <LabeledParameter label='Zoom'>
             <ZoomControls />

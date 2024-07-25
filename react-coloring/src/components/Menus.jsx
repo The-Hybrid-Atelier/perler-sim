@@ -87,9 +87,9 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
           <LabeledParameter label='BeadPlace'>
             <Button color={currentTool === "beadTool" ? "green" : ""} icon onClick={() => setCurrentTool("beadTool")}><PiCylinderFill /></Button>
           </LabeledParameter>
-          {/* <LabeledParameter label='Pan'>
+          <LabeledParameter label='Pan'>
             <Button color={currentTool === "panTool" ? "green" : ""} icon onClick={() => setCurrentTool("panTool")}><IoMoveSharp /> </Button>
-          </LabeledParameter> */}
+          </LabeledParameter>
         </ToolBarSubMenu>
 
 

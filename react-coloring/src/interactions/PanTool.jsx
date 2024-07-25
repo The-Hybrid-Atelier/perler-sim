@@ -4,20 +4,23 @@ const panTool = (selectedColor) => {
     return new paper.Tool({
         name: 'panTool',
         color: selectedColor,
-        downPoint: null,
+        lastPoint: null,
         setColor: function (color) {
-            console.log('UPDATING COLOR', new paper.Color(color).toCSS(true));
             this.color = color;
         },
         onMouseDown: function(event) {
-           this.downPoint = event.point;
+           
+            this.lastPoint = paper.view.projectToView(event.point);
+            return;
+
         },
-        onMouseDrag: function(event){
-            const delta = this.downPoint.subtract(event.point);
-            paper.view.translate(delta);
-        },
-        onMouseUp: function(event){
-            this.downPoint = null;
+        onMouseDrag: function(event) {
+         
+            var point = paper.view.projectToView(event.point),
+            last = paper.view.viewToProject(this.lastPoint);
+            paper.view.scrollBy(last.subtract(event.point));
+            this.lastPoint = point;
+            
         }
     });
 };

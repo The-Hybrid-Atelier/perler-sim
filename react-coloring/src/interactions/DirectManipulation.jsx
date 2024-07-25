@@ -170,15 +170,34 @@ const changeNearestBeadColor = (paper, clickPoint, color) => {
     }
   });
 
-  if (nearestBead) {
-    nearestBead.visible = !nearestBead.visible;
-  }
+  return nearestBead;
 };
 
 const generalMouseFunctions = (paper, selectedColor) => {
-  paper.view.onClick = function(event) {
-    changeNearestBeadColor(paper, event.point, selectedColor);
+  paper.view.activeBead = null;
+
+  paper.view.onMouseDown = function(event) {
+    this.activeBead = changeNearestBeadColor(paper, event.point, selectedColor);
   };
+
+  paper.view.onMouseUp = function(event) {
+    if (this.activeBead ) {
+      // IF BEAD IS NOT THERE, ADD IT
+      if(!this.activeBead.visible){
+        this.activeBead.visible = true;
+        this.activeBead.fillColor = selectedColor;
+      }
+      // IF BEAD IS THERE, ONLY REMOVE IT IF SHIFTED
+      else if(this.activeBead.visible && event.modifiers.shift){
+        this.activeBead.visible = false;
+        this.activeBead.fillColor = selectedColor;
+      }
+      else{
+        this.activeBead.fillColor = selectedColor;
+      }
+    }
+  };
+
 };
 
 const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM, gridVisible }) => {

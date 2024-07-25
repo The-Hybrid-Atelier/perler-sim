@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Icon } from 'semantic-ui-react';
+import { Button, ButtonGroup, Icon } from 'semantic-ui-react';
 import paper from 'paper';
 
 const ZoomControls = () => {
@@ -8,14 +8,14 @@ const ZoomControls = () => {
     };
 
     return (
-        <div>
-            <Button icon onClick={() => zoomInteraction(1.1)}>
-                <Icon name='zoom in' />
-            </Button>
-            <Button icon onClick={() => zoomInteraction(0.9)}>
+        <ButtonGroup>
+            <Button primary icon onClick={() => zoomInteraction(0.9)}>
                 <Icon name='zoom out' />
             </Button>
-        </div>
+            <Button primary icon onClick={() => zoomInteraction(1.1)}>
+                <Icon name='zoom in' />
+            </Button>
+        </ButtonGroup>
     );
 };
 

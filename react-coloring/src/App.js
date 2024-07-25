@@ -16,8 +16,8 @@ const defaultBeadParameters = {
   gridSize: 5,
   beadSpacing: 0.5,
   createGridType: 'square',
-  fillColor: 'black',
-  strokeColor: 'black',
+  fillColor: BEAD_COLORS[0],
+  strokeColor: BEAD_COLORS[0],
   strokeWidth: 0,
   selectionStrokeWidth: 1,
   thickness: 0.33

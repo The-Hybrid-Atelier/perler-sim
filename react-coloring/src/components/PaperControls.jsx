@@ -1,10 +1,11 @@
 import React from 'react';
 import { exportSVG, getColorName } from '../javascripts/Paper.js'; // Assuming getColorName is a function that returns color name based on color
-import { Icon, Button, Modal } from 'semantic-ui-react';
+import { Icon, Button, Modal, ButtonGroup } from 'semantic-ui-react';
 import { createGrid } from '../interactions/DirectManipulation.jsx';
 import paper from 'paper';
 import axios from 'axios';
 import FileSaver from 'file-saver';
+import { BEAD_COLORS, BEAD_COLORS_NAMES } from '../AppConfig.jsx';
 
 const PaperControls = ({  selectedColor }) => {
   const trashInteraction = () => {
@@ -13,7 +14,7 @@ const PaperControls = ({  selectedColor }) => {
 
   const handleExportSTL = async () => {
     const svgString = exportSVG();
-    console.log('Exported SVG:', svgString);
+    // console.log('Exported SVG:', svgString);
 
     const blob = new Blob([svgString], { type: 'image/svg+xml' });
     const formData = new FormData();
@@ -31,16 +32,32 @@ const PaperControls = ({  selectedColor }) => {
     }
   };
 
-  const handleExportSVG = () => {
-    console.log("Selected color:", selectedColor);  // Check selectedColor value
-    const svgString = exportSVG();
-    const color = selectedColor || 'black';
-    const colorName = getColorName(color); 
+  const handleExportSVG = (selectedColor) => {
+    console.log("Selected color:", selectedColor, BEAD_COLORS);  // Check selectedColor value
+    
+    const colorIndex = BEAD_COLORS.findIndex(element => element === selectedColor);
+    const colorName = BEAD_COLORS_NAMES[colorIndex];
     const filename = `${colorName}.svg`;
-    console.log("Color name resolved:", colorName);  // Log the resolved color name
+
+    var beadsToRemove = paper.project.getItems({
+      name: 'bead',
+      match: function(item) {
+        return item.fillColor && item.fillColor.toCSS(true) !== selectedColor;
+      }
+    });
+    var beadsToKeep = paper.project.getItems({
+      name: 'bead',
+      match: function(item) {
+        return item.fillColor && item.fillColor.toCSS(true) === selectedColor;
+      }
+    });
+    beadsToRemove.forEach(bead => bead.remove());
+    const svgString = exportSVG();
+    console.log("Color name resolved:", colorName, selectedColor);  // Log the resolved color name
     console.log("Filename:", filename);  // Log the filename being used
     const blob = new Blob([svgString], { type: 'image/svg+xml' });
     FileSaver.saveAs(blob, filename);
+    beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));
   };
   
 
@@ -52,13 +69,16 @@ const PaperControls = ({  selectedColor }) => {
         content='This action cannot be undone.'
         actions={['Keep It', { key: 'done', content: 'Nuke It', positive: true, onClick: trashInteraction }]}
       />
-      <Button color="green" icon onClick={handleExportSTL}>
-        <Icon name='download' />
-        Export STL
-      </Button>
-      {/* <Button icon onClick={handleExportSVG}>
-        <Icon name='download' />
-      </Button> */}
+      <ButtonGroup>
+        <Button icon onClick={()=>handleExportSTL(selectedColor)}>
+          <Icon name='download' />
+          STL
+        </Button>
+        <Button icon onClick={()=>handleExportSVG(selectedColor)}>
+          <Icon name='download' />
+          SVG
+        </Button>
+      </ButtonGroup>
     </div>
   );
 };

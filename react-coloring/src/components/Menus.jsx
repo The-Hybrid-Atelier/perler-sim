@@ -73,7 +73,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
         {/* TOOLS */}
         <ToolBarSubMenu id="Tools" name='Tools'>
           <LabeledParameter label='Controls'>
-            <PaperControls/>
+            <PaperControls selectedColor={selectedColor}/>
           </LabeledParameter>
           <LabeledParameter label='Zoom'>
             <ZoomControls />

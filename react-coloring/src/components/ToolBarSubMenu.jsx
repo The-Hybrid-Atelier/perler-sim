@@ -16,7 +16,7 @@ const ToolBarSubMenu = ({ name, children, initVisible = true}) => {
     >
       <div className={`submenu ${name.toLowerCase()}`}>
         <div className="submenu-label handle crsb">
-          {name}
+          {name.toUpperCase()}
           <Button 
             size="mini"
             floated="right"

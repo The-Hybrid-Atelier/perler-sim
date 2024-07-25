@@ -6,10 +6,9 @@ import paper from 'paper';
 import axios from 'axios';
 import FileSaver from 'file-saver';
 
-const PaperControls = ({ gridSize, beadSpacing, selectedColor }) => {
+const PaperControls = ({  selectedColor }) => {
   const trashInteraction = () => {
     paper.project.clear();
-    createGrid(gridSize, beadSpacing);
   };
 
   const handleExportSTL = async () => {
@@ -48,13 +47,14 @@ const PaperControls = ({ gridSize, beadSpacing, selectedColor }) => {
   return (
     <div>
       <Modal
-        trigger={<Button icon><Icon name='trash' /></Button>}
+        trigger={<Button color='red' icon><Icon name='trash' />Restart</Button>}
         header='Are you sure you want to destroy your masterpiece?'
         content='This action cannot be undone.'
         actions={['Keep It', { key: 'done', content: 'Nuke It', positive: true, onClick: trashInteraction }]}
       />
-      <Button icon onClick={handleExportSTL}>
+      <Button color="green" icon onClick={handleExportSTL}>
         <Icon name='download' />
+        Export STL
       </Button>
       {/* <Button icon onClick={handleExportSVG}>
         <Icon name='download' />

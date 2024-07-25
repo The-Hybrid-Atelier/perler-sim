@@ -34,6 +34,7 @@ function App() {
     <div className="App">
       <div className="controls fh">
         <Menus
+            paper={paperReady}
             beadParameters={beadParameters}
             setBeadParameters={setBeadParameters}
             selectedColor={selectedColor}

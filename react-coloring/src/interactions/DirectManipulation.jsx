@@ -157,48 +157,6 @@ const createPerlerBead = (paper, point, beadParameters) => {
   return bead;
 };
 
-const changeNearestBeadColor = (paper, clickPoint, color) => {
-  let nearestBead = null;
-  let minDistance = Number.MAX_VALUE;
-
-  // paper.project.getItems makes it so not EVERYTHING in the project is queried. 
-  paper.project.getItems({name: 'bead'}).forEach(item => {
-    const distance = item.position.getDistance(clickPoint);
-    if (distance < minDistance) {
-      minDistance = distance;
-      nearestBead = item;
-    }
-  });
-
-  return nearestBead;
-};
-
-const generalMouseFunctions = (paper, selectedColor) => {
-  paper.view.activeBead = null;
-
-  paper.view.onMouseDown = function(event) {
-    this.activeBead = changeNearestBeadColor(paper, event.point, selectedColor);
-  };
-
-  paper.view.onMouseUp = function(event) {
-    if (this.activeBead ) {
-      // IF BEAD IS NOT THERE, ADD IT
-      if(!this.activeBead.visible){
-        this.activeBead.visible = true;
-        this.activeBead.fillColor = selectedColor;
-      }
-      // IF BEAD IS THERE, ONLY REMOVE IT IF SHIFTED
-      else if(this.activeBead.visible && event.modifiers.shift){
-        this.activeBead.visible = false;
-        this.activeBead.fillColor = selectedColor;
-      }
-      else{
-        this.activeBead.fillColor = selectedColor;
-      }
-    }
-  };
-
-};
 
 const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM, gridVisible }) => {
   useEffect(() => {
@@ -230,10 +188,15 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
     }
   }, [paperReady, beadParametersMM]);
 
+  
+
   useEffect(() => {
-    if (paperReady) {
-      generalMouseFunctions(paperReady, selectedColor);
+    if(paperReady){
+      paperReady.tools.forEach(tool => {
+        tool.setColor(selectedColor);
+      });
     }
+   
   }, [paperReady, selectedColor]);
 
   useEffect(() => {

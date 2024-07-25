@@ -1,18 +1,25 @@
+import { useState } from 'react';
 // STYLE LIBRARIES
 import { Button, ButtonGroup, Label} from 'semantic-ui-react';
 import { FaRegSquare, FaRegCircle } from "react-icons/fa"; 
 import { FiHexagon } from "react-icons/fi";
 import { LuPaintBucket } from "react-icons/lu";
-
+import { IoBrushOutline } from "react-icons/io5";
+import { PiCylinderFill } from "react-icons/pi";
+import { IoMoveSharp } from "react-icons/io5";
 // COMPONENTS
 import { ToolBarSubMenu } from './ToolBarSubMenu.jsx';
 import { ParameterSlider, LabeledParameter } from './ParameterSlider'; 
 import { fillTool } from '../interactions/FillTool.jsx';
+import { lineTool } from '../interactions/LineTool.jsx';
+import { beadTool } from '../interactions/BeadTool.jsx';
+import { panTool } from '../interactions/PanTool.jsx';
 import { ZoomControls } from './ZoomControls.jsx';
 import { PaperControls } from './PaperControls.jsx';
 
 // PARAMETERS
 import { BEAD_COLORS} from '../AppConfig.jsx';
+import { useEffect } from 'react';
 
 
 const ColorPicker = ({ selectedColor, setSelectedColor }) => {
@@ -34,12 +41,32 @@ const ColorPicker = ({ selectedColor, setSelectedColor }) => {
     );
   };
 
-const Menus = ({beadParameters, setBeadParameters, selectedColor, setSelectedColor, gridVisible, setGridVisible}) => {
+const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSelectedColor, gridVisible, setGridVisible}) => {
     const setGridSize = (value)=> setBeadParameters({...beadParameters, gridSize: value});
     const setBeadSpacing = (value)=>setBeadParameters({...beadParameters, beadSpacing: value});
     const setCreateGridType = (value)=>setBeadParameters({...beadParameters, createGridType: value});
     const setThickness = (value)=>setBeadParameters({...beadParameters, thickness: value, inner_radius: beadParameters.outer_radius - value});
-  
+    const [currentTool, setCurrentTool] = useState('beadTool');
+
+    useEffect(() => { 
+      if(paper){
+        const lineT = lineTool(selectedColor);
+        const fillT = fillTool(selectedColor);
+        const beadT = beadTool(selectedColor);
+        const panT = panTool(selectedColor);
+      }
+    }, [paper]);
+
+    useEffect(() => {
+      if(paper && currentTool){
+        paper.tools.forEach(tool =>{
+          if(tool.name === currentTool){
+            tool.activate();
+          }
+        });
+      }
+    }, [paper, currentTool]);
+
     return (
         <>
          
@@ -51,9 +78,18 @@ const Menus = ({beadParameters, setBeadParameters, selectedColor, setSelectedCol
           <LabeledParameter label='Zoom'>
             <ZoomControls />
           </LabeledParameter>
-          <LabeledParameter label='QuickPlace'>
-            <Button color='green' icon onClick={() => fillTool(selectedColor)}><LuPaintBucket /></Button>
+          <LabeledParameter label='MarqueePlace'>
+            <Button color={currentTool === "fillTool" ? "green" : ""} icon onClick={() => setCurrentTool("fillTool")}><LuPaintBucket /></Button>
           </LabeledParameter>
+          <LabeledParameter label='BrushPlace'>
+            <Button color={currentTool === "brushTool" ? "green" : ""} icon onClick={() => setCurrentTool("brushTool")}><IoBrushOutline /></Button>
+          </LabeledParameter>
+          <LabeledParameter label='BeadPlace'>
+            <Button color={currentTool === "beadTool" ? "green" : ""} icon onClick={() => setCurrentTool("beadTool")}><PiCylinderFill /></Button>
+          </LabeledParameter>
+          {/* <LabeledParameter label='Pan'>
+            <Button color={currentTool === "panTool" ? "green" : ""} icon onClick={() => setCurrentTool("panTool")}><IoMoveSharp /> </Button>
+          </LabeledParameter> */}
         </ToolBarSubMenu>
 
 

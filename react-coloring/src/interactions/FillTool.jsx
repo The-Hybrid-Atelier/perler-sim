@@ -1,11 +1,15 @@
 import paper from 'paper';
 
-export const fillTool = (selectedColor) => {
+const fillTool = (selectedColor) => {
     const tool = new paper.Tool();
     let dragging = false;
     let startRect;
     let area = null;
-
+    tool.name = 'fillTool';
+    tool.color = selectedColor;
+    tool.setColor = function (color) {
+        this.color = color;
+    }
     tool.onMouseDown = function (event) {
         startRect = new paper.Rectangle(event.point, new paper.Size(0, 0));
         dragging = true;
@@ -31,6 +35,7 @@ export const fillTool = (selectedColor) => {
     };
 
     tool.onMouseUp = function (event) {
+        const color = this.color;
         if (dragging) {
             dragging = false;
 
@@ -41,7 +46,7 @@ export const fillTool = (selectedColor) => {
                     if (bead.visible) {
                         bead.visible = false;
                     } else {
-                        bead.fillColor = selectedColor;
+                        bead.fillColor = color;
                         bead.visible = true;
                     }
                 }
@@ -58,8 +63,8 @@ export const fillTool = (selectedColor) => {
         }
     };
 
-    tool.activate();
+    return tool;
 };
 
-export default fillTool;
+export {fillTool};
 

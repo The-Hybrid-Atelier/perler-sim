@@ -1,0 +1,51 @@
+import paper from 'paper';
+const changeNearestBeadColor = (paper, clickPoint) => {
+    let nearestBead = null;
+    let minDistance = Number.MAX_VALUE;
+  
+    // paper.project.getItems makes it so not EVERYTHING in the project is queried. 
+    paper.project.getItems({name: 'bead'}).forEach(item => {
+      const distance = item.position.getDistance(clickPoint);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestBead = item;
+      }
+    });
+  
+    return nearestBead;
+  };
+
+  
+const beadTool = (selectedColor) => {
+    return new paper.Tool({
+        name: 'beadTool',
+        color: selectedColor,
+        activeBead: null,
+        setColor: function (color) {
+            console.log('UPDATING COLOR', new paper.Color(color).toCSS(true));
+            this.color = color;
+        },
+        onMouseDown: function(event) {
+            this.activeBead = changeNearestBeadColor(paper, event.point);
+        },
+        onMouseUp: function(event){
+            if (this.activeBead ) {
+                // IF BEAD IS NOT THERE, ADD IT
+                if(!this.activeBead.visible){
+                    this.activeBead.visible = true;
+                    this.activeBead.fillColor = this.color;
+                }
+                // IF BEAD IS THERE, ONLY REMOVE IT IF SHIFTED
+                else if(this.activeBead.visible && event.modifiers.shift){
+                    this.activeBead.visible = false;
+                    this.activeBead.fillColor = this.color;
+                }
+                else{
+                    this.activeBead.fillColor = this.color;
+                }
+            }
+        }
+    });
+};
+
+export {beadTool};

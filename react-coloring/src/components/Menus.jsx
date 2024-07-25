@@ -115,7 +115,7 @@ const Menus = ({beadParameters, setBeadParameters, selectedColor, setSelectedCol
 
         {/* BEADS */}
         <ToolBarSubMenu id="BeadControls" name='Beads'>
-            <LabeledParameter label='Bead Thickness'>
+            <LabeledParameter label='Thickness'>
 
             <ParameterSlider 
                 value={beadParameters.thickness} 

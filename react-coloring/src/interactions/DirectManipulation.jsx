@@ -161,23 +161,17 @@ const changeNearestBeadColor = (paper, clickPoint, color) => {
   let nearestBead = null;
   let minDistance = Number.MAX_VALUE;
 
-  paper.project.activeLayer.children.forEach(item => {
-    if (item.name === "bead") {
-      const distance = item.position.getDistance(clickPoint);
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestBead = item;
-      }
+  // paper.project.getItems makes it so not EVERYTHING in the project is queried. 
+  paper.project.getItems({name: 'bead'}).forEach(item => {
+    const distance = item.position.getDistance(clickPoint);
+    if (distance < minDistance) {
+      minDistance = distance;
+      nearestBead = item;
     }
   });
 
   if (nearestBead) {
-    if (nearestBead.visible) {
-      nearestBead.visible = false;
-    } else {
-      nearestBead.fillColor = color;
-      nearestBead.visible = true;
-    }
+    nearestBead.visible = !nearestBead.visible;
   }
 };
 

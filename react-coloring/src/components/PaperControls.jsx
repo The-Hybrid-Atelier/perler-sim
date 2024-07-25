@@ -33,6 +33,8 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
   };
 
   const handleExportSVG = (selectedColor) => {
+    const prevZoom = paper.view.zoom;
+    paper.view.zoom = 1;
     console.log("Selected color:", selectedColor, BEAD_COLORS);  // Check selectedColor value
     
     const colorIndex = BEAD_COLORS.findIndex(element => element === selectedColor);
@@ -58,6 +60,7 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
     const blob = new Blob([svgString], { type: 'image/svg+xml' });
     FileSaver.saveAs(blob, filename);
     beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));
+    paper.view.zoom = prevZoom;
   };
   
 

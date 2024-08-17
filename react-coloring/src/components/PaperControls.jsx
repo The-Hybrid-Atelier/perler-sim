@@ -12,25 +12,63 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
     paper.project.clear();
   };
 
+  // const handleExportSTL = async () => {
+  //   const svgString = exportSVG();
+  //   const blob = new Blob([svgString], { type: 'image/svg+xml' });
+  //   const formData = new FormData();
+  //   formData.append('svg', blob, 'design.svg');
+  
+  //   try {
+  //     const response = await axios.post('https://orange-barnacle-vx575vg799c6qgq-3001.app.github.dev/convert-svg-to-stl', formData, {
+  //       responseType: 'blob',
+  //     });
+  //     FileSaver.saveAs(response.data, `design.stl`);
+  //   } catch (error) {
+  //     console.error('Error exporting STL:', error);
+  //   }
+  // };
+
   const handleExportSTL = async () => {
-    const svgString = exportSVG();
-    // console.log('Exported SVG:', svgString);
-
-    const blob = new Blob([svgString], { type: 'image/svg+xml' });
-    const formData = new FormData();
-    formData.append('svg', blob, 'design.svg');
-    FileSaver.saveAs(blob, 'design.svg');
-
-    try {
-      const response = await axios.post('https://super-enigma-r5v9x67qwvj3955-3001.app.github.dev/convert-svg-to-stl', formData, {
-        responseType: 'blob',
+    const prevZoom = paper.view.zoom;
+    paper.view.zoom = 1;
+  
+    for (let colorIndex = 0; colorIndex < BEAD_COLORS.length; colorIndex++) {
+      const color = BEAD_COLORS[colorIndex];
+      const colorName = BEAD_COLORS_NAMES[colorIndex];
+  
+      // Filter beads by color
+      const beadsToRemove = paper.project.getItems({
+        name: 'bead',
+        match: function (item) {
+          return item.fillColor && item.fillColor.toCSS(true) !== color;
+        },
       });
-      console.log('STL file received:', response);  // Log when STL file is received
-      FileSaver.saveAs(response.data, 'design.stl');
-    } catch (error) {
-      console.error('Error exporting STL:', error);
+  
+      beadsToRemove.forEach(bead => bead.remove());
+  
+      const svgString = exportSVG();
+      const blob = new Blob([svgString], { type: 'image/svg+xml' });
+      const formData = new FormData();
+      formData.append('svg', blob, `design_${colorName}.svg`);
+  
+      // Generate the filename based on project name, color, and version
+      const filename = `${projectName.toLowerCase().replace(/\s+/g, '_')}_${colorName}_${version}.stl`;
+  
+      try {
+        const response = await axios.post('https://orange-barnacle-vx575vg799c6qgq-3001.app.github.dev/convert-svg-to-stl', formData, {
+          responseType: 'blob',
+        });
+        FileSaver.saveAs(response.data, filename);
+      } catch (error) {
+        console.error(`Error exporting STL for color ${colorName}:`, error);
+      }
+  
+      // Add back the removed beads
+      beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));
     }
-  };
+  
+    paper.view.zoom = prevZoom;
+  };  
 
   const handleExportSVG = (selectedColor) => {
     const prevZoom = paper.view.zoom;
@@ -87,29 +125,3 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
 };
 
 export { PaperControls };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,5 +1,17 @@
 {
+  "name": "my-app",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm run build --prefix react-coloring",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node react-coloring/src/javascripts/server.js",
+    "client": "npm start --prefix react-coloring"
+  },
   "dependencies": {
-    "paper": "^0.12.17"
+    "concurrently": "^7.0.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "react-scripts": "^4.0.3"
   }
 }

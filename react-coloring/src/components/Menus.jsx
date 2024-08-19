@@ -124,7 +124,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
                     setValue={setBeadSpacing} 
                     minValue={-1} 
                     maxValue={1.5}
-                    stepValue={0.1}
+                    stepValue={0.05}
                 />
                 {beadParameters.beadSpacing.toFixed(2)} mm
             </LabeledParameter>
@@ -166,7 +166,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
                 setValue={setThickness} 
                 minValue={0.1} 
                 maxValue={beadParameters.outer_radius}
-                stepValue={0.1}
+                stepValue={0.05}
             />
             {beadParameters.thickness.toFixed(2)} mm
             </LabeledParameter>

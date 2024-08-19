@@ -1,7 +1,5 @@
 import React from 'react';
-import { exportSVG, getColorName } from '../javascripts/Paper.js'; // Assuming getColorName is a function that returns color name based on color
 import { Icon, Button, Modal, ButtonGroup } from 'semantic-ui-react';
-import { createGrid } from '../interactions/DirectManipulation.jsx';
 import paper from 'paper';
 import axios from 'axios';
 import FileSaver from 'file-saver';
@@ -11,22 +9,6 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
   const trashInteraction = () => {
     paper.project.clear();
   };
-
-  // const handleExportSTL = async () => {
-  //   const svgString = exportSVG();
-  //   const blob = new Blob([svgString], { type: 'image/svg+xml' });
-  //   const formData = new FormData();
-  //   formData.append('svg', blob, 'design.svg');
-  
-  //   try {
-  //     const response = await axios.post('https://orange-barnacle-vx575vg799c6qgq-3001.app.github.dev/convert-svg-to-stl', formData, {
-  //       responseType: 'blob',
-  //     });
-  //     FileSaver.saveAs(response.data, `design.stl`);
-  //   } catch (error) {
-  //     console.error('Error exporting STL:', error);
-  //   }
-  // };
 
   const handleExportSTL = async () => {
     const prevZoom = paper.view.zoom;

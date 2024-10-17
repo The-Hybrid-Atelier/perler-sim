@@ -5,6 +5,10 @@ import axios from 'axios';
 import FileSaver from 'file-saver';
 import { BEAD_COLORS, BEAD_COLORS_NAMES } from '../AppConfig.jsx';
 
+const exportSVG = () => {
+  return paper.project.exportSVG({ asString: true });
+};
+
 const PaperControls = ({  selectedColor, version, projectName }) => {
   const trashInteraction = () => {
     paper.project.clear();
@@ -37,7 +41,7 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
       const filename = `${projectName.toLowerCase().replace(/\s+/g, '_')}_${colorName}_${version}.stl`;
   
       try {
-        const response = await axios.post('https://orange-barnacle-vx575vg799c6qgq-3001.app.github.dev/convert-svg-to-stl', formData, {
+        const response = await axios.post('http://localhost:3001/convert-svg-to-stl', formData, {
           responseType: 'blob',
         });
         FileSaver.saveAs(response.data, filename);

@@ -22,15 +22,23 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
       const color = BEAD_COLORS[colorIndex];
       const colorName = BEAD_COLORS_NAMES[colorIndex];
   
-      // Filter beads by color
+      // Filter beads by color and visibility
       const beadsToRemove = paper.project.getItems({
         name: 'bead',
         match: function (item) {
-          return item.fillColor && item.fillColor.toCSS(true) !== color;
+          return item.visible === false || (item.fillColor && item.fillColor.toCSS(true) !== color);
         },
+      });
+
+      console.log(`Beads to remove (${beadsToRemove.length}):`, beadsToRemove);
+
+      // Filter out GridLines
+      const gridLinesToRemove = paper.project.getItems({
+        name: 'gridLine',
       });
   
       beadsToRemove.forEach(bead => bead.remove());
+      gridLinesToRemove.forEach(gridLine => gridLine.remove());
   
       const svgString = exportSVG();
       const blob = new Blob([svgString], { type: 'image/svg+xml' });
@@ -49,8 +57,9 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
         console.error(`Error exporting STL for color ${colorName}:`, error);
       }
   
-      // Add back the removed beads
+      // Add back the removed beads and gridLines
       beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));
+      gridLinesToRemove.forEach(gridLine => paper.project.activeLayer.addChild(gridLine));
     }
   
     paper.view.zoom = prevZoom;
@@ -68,22 +77,18 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
     var beadsToRemove = paper.project.getItems({
       name: 'bead',
       match: function(item) {
-        return item.fillColor && item.fillColor.toCSS(true) !== selectedColor;
-      }
+        return item.visible === false || (item.fillColor && item.fillColor.toCSS(true) !== selectedColor);      }
     });
-    var beadsToKeep = paper.project.getItems({
-      name: 'bead',
-      match: function(item) {
-        return item.fillColor && item.fillColor.toCSS(true) === selectedColor;
-      }
-    });
+
     beadsToRemove.forEach(bead => bead.remove());
     const svgString = exportSVG();
     console.log("Color name resolved:", colorName, selectedColor);  // Log the resolved color name
     console.log("Filename:", filename);  // Log the filename being used
     const blob = new Blob([svgString], { type: 'image/svg+xml' });
     FileSaver.saveAs(blob, filename);
+
     beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));
+
     paper.view.zoom = prevZoom;
   };
   

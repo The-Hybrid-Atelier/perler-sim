@@ -11,8 +11,8 @@ import { Menus } from './components/Menus.jsx';
 const START_SCREEN = "paper";
 const defaultBeadParameters = {
   name: "bead",
-  outer_radius: 0.9,
-  inner_radius: 0.57,
+  outer_radius: (4.5/2),
+  inner_radius: ((4.5/2) - (0.79)),
   gridSize: 5,
   beadSpacing: 0.5,
   createGridType: 'square',
@@ -20,7 +20,7 @@ const defaultBeadParameters = {
   strokeColor: BEAD_COLORS[0],
   strokeWidth: 0,
   selectionStrokeWidth: 1,
-  thickness: 0.33
+  thickness: (0.79)
 };
 
 function App() {

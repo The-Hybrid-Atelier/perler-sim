@@ -80,7 +80,14 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
         return item.visible === false || (item.fillColor && item.fillColor.toCSS(true) !== selectedColor);      }
     });
 
+     // Filter out GridLines
+     const gridLinesToRemove = paper.project.getItems({
+      name: 'gridLine',
+    });
+
     beadsToRemove.forEach(bead => bead.remove());
+    gridLinesToRemove.forEach(gridLine => gridLine.remove());
+
     const svgString = exportSVG();
     console.log("Color name resolved:", colorName, selectedColor);  // Log the resolved color name
     console.log("Filename:", filename);  // Log the filename being used
@@ -88,6 +95,7 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
     FileSaver.saveAs(blob, filename);
 
     beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));
+    gridLinesToRemove.forEach(gridLine => paper.project.activeLayer.addChild(gridLine));
 
     paper.view.zoom = prevZoom;
   };

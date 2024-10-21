@@ -13,7 +13,7 @@ const LabeledParameter = ({label, children}) => {
 
 const ParameterSlider = ({ value, setValue, minValue, maxValue, stepValue, parser=parseFloat}) => {
   
-  const handleChange = (e) => {setValue(parser(event.target.value));};
+  const handleChange = (e) => {setValue(parser(e.target.value));};
 
   return (
       <input

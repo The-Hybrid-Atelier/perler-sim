@@ -2,10 +2,10 @@
   "name": "my-app",
   "version": "1.0.0",
   "scripts": {
-    "build": "npm run build --prefix react-coloring",
+    "build": "npm run build --prefix perler-sim",
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "node react-coloring/src/javascripts/server.js",
-    "client": "npm start --prefix react-coloring"
+    "server": "node perler-sim/src/javascripts/server.js",
+    "client": "npm start --prefix perler-sim"
   },
   "dependencies": {
     "axios": "^1.7.7",

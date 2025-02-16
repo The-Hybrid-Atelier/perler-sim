@@ -46,6 +46,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
     const setBeadSpacing = (value)=>setBeadParameters({...beadParameters, beadSpacing: value});
     const setCreateGridType = (value)=>setBeadParameters({...beadParameters, createGridType: value});
     const setThickness = (value)=>setBeadParameters({...beadParameters, thickness: value, inner_radius: beadParameters.outer_radius - value});
+    const setBeadHeight = (value) => setBeadParameters({...beadParameters, beadHeight: value});
     const [currentTool, setCurrentTool] = useState('beadTool');
     const [projectName, setProjectName] = useState('MyBeadProject');
     const [version, setVersion] = useState("1");
@@ -81,7 +82,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
             <Input type="number" value={version} onChange={(e)=>setVersion(e.target.value)}/>
           </LabeledParameter>
           <LabeledParameter label='Controls'>
-            <PaperControls projectName={projectName} version={version} selectedColor={selectedColor}/>
+          <PaperControls projectName={projectName} version={version} selectedColor={selectedColor} beadParameters={beadParameters} />
           </LabeledParameter>
           <LabeledParameter label='Zoom'>
             <ZoomControls />
@@ -167,6 +168,17 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
                 stepValue={0.05}
             />
             {beadParameters.thickness.toFixed(2)} mm
+            </LabeledParameter>
+
+            <LabeledParameter label='Height'>
+                <ParameterSlider 
+                    value={beadParameters.beadHeight} 
+                    setValue={setBeadHeight} 
+                    minValue={1} 
+                    maxValue={10} 
+                    stepValue={0.1}
+                />
+                {beadParameters.beadHeight.toFixed(2)} mm
             </LabeledParameter>
             
           <ColorPicker selectedColor={selectedColor} setSelectedColor={setSelectedColor} />

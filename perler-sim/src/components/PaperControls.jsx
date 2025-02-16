@@ -9,7 +9,8 @@ const exportSVG = () => {
   return paper.project.exportSVG({ asString: true });
 };
 
-const PaperControls = ({  selectedColor, version, projectName }) => {
+const PaperControls = ({  selectedColor, version, projectName, beadParameters }) => {
+  console.log("PaperControls beadParameters:", beadParameters); // Debugging log
   const trashInteraction = () => {
     paper.project.clear();
   };
@@ -44,10 +45,7 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
         const blob = new Blob([svgString], { type: 'image/svg+xml' });
         const formData = new FormData();
         formData.append('svg', blob, `design_${colorName}.svg`);
-
-        // Add beadHeight to formData
-        const beadHeight = 5.2; 
-        formData.append('beadHeight', beadHeight);
+        formData.append('beadHeight', beadParameters.beadHeight);
 
         // Generate the filename based on project name, color, and version
         const filename = `${projectName.toLowerCase().replace(/\s+/g, '_')}_${colorName}_${version}.stl`;

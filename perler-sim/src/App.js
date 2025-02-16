@@ -20,7 +20,8 @@ const defaultBeadParameters = {
   strokeColor: BEAD_COLORS[0],
   strokeWidth: 0,
   selectionStrokeWidth: 1,
-  thickness: (0.79)
+  thickness: (0.79),
+  beadHeight: 5.2
 };
 
 function App() {

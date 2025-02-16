@@ -4,7 +4,7 @@
   "scripts": {
     "build": "npm run build --prefix perler-sim",
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "node perler-sim/src/javascripts/server.js",
+    "server": "node perler-sim/src/back-end/server.js",
     "client": "npm start --prefix perler-sim"
   },
   "dependencies": {

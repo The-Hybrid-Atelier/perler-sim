@@ -12,6 +12,9 @@ const PORT = process.env.PORT || 3001;
 // Enable CORS for all routes to allow cross-origin requests
 app.use(cors());
 
+// Middleware to parse JSON body data
+app.use(express.json());
+
 // Set up multer for handling file uploads, storing files in the system's temp directory
 const upload = multer({ dest: os.tmpdir() });
 
@@ -32,6 +35,12 @@ app.post('/convert-svg-to-stl', upload.single('svg'), (req, res) => {
     return res.status(400).send('Uploaded file is empty');
   }
 
+  // Extract bead height from the request body
+  const { beadHeight } = req.body;
+  if (!beadHeight || isNaN(beadHeight)) {
+    return res.status(400).send('Invalid bead height');
+  }
+
   // Define file paths for SVG, SCAD, and STL files
   const svgFilePath = `${req.file.path}.svg`; // Rename file to have .svg extension
   const stlFilePath = path.join(os.tmpdir(), `${path.basename(svgFilePath, '.svg')}.stl`);
@@ -42,7 +51,7 @@ app.post('/convert-svg-to-stl', upload.single('svg'), (req, res) => {
   /*[Hidden]*/
   $fn = 100;
   /* [Parameters] */
-  Beads_Height = 5.2;
+  Beads_Height = ${beadHeight};
   module perler_bead(){
       linear_extrude(height = Beads_Height, center = true)
           import("${svgFilePath}", scale=10);

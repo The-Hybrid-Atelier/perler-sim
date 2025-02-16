@@ -155,8 +155,6 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
         </ToolBarSubMenu>
         
 
-
-
         {/* BEADS */}
         <ToolBarSubMenu id="BeadControls" name='Beads'>
             <LabeledParameter label='Thickness'>

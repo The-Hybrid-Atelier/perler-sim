@@ -17,53 +17,58 @@ const PaperControls = ({  selectedColor, version, projectName }) => {
   const handleExportSTL = async () => {
     const prevZoom = paper.view.zoom;
     paper.view.zoom = 1;
-  
+
     for (let colorIndex = 0; colorIndex < BEAD_COLORS.length; colorIndex++) {
-      const color = BEAD_COLORS[colorIndex];
-      const colorName = BEAD_COLORS_NAMES[colorIndex];
-  
-      // Filter beads by color and visibility
-      const beadsToRemove = paper.project.getItems({
-        name: 'bead',
-        match: function (item) {
-          return item.visible === false || (item.fillColor && item.fillColor.toCSS(true) !== color);
-        },
-      });
+        const color = BEAD_COLORS[colorIndex];
+        const colorName = BEAD_COLORS_NAMES[colorIndex];
 
-      console.log(`Beads to remove (${beadsToRemove.length}):`, beadsToRemove);
-
-      // Filter out GridLines
-      const gridLinesToRemove = paper.project.getItems({
-        name: 'gridLine',
-      });
-  
-      beadsToRemove.forEach(bead => bead.remove());
-      gridLinesToRemove.forEach(gridLine => gridLine.remove());
-  
-      const svgString = exportSVG();
-      const blob = new Blob([svgString], { type: 'image/svg+xml' });
-      const formData = new FormData();
-      formData.append('svg', blob, `design_${colorName}.svg`);
-  
-      // Generate the filename based on project name, color, and version
-      const filename = `${projectName.toLowerCase().replace(/\s+/g, '_')}_${colorName}_${version}.stl`;
-  
-      try {
-        const response = await axios.post('http://localhost:3001/convert-svg-to-stl', formData, {
-          responseType: 'blob',
+        // Filter beads by color and visibility
+        const beadsToRemove = paper.project.getItems({
+            name: 'bead',
+            match: function (item) {
+                return item.visible === false || (item.fillColor && item.fillColor.toCSS(true) !== color);
+            },
         });
-        FileSaver.saveAs(response.data, filename);
-      } catch (error) {
-        console.error(`Error exporting STL for color ${colorName}:`, error);
-      }
-  
-      // Add back the removed beads and gridLines
-      beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));
-      gridLinesToRemove.forEach(gridLine => paper.project.activeLayer.addChild(gridLine));
+
+        console.log(`Beads to remove (${beadsToRemove.length}):`, beadsToRemove);
+
+        // Filter out GridLines
+        const gridLinesToRemove = paper.project.getItems({
+            name: 'gridLine',
+        });
+
+        beadsToRemove.forEach(bead => bead.remove());
+        gridLinesToRemove.forEach(gridLine => gridLine.remove());
+
+        const svgString = exportSVG();
+        const blob = new Blob([svgString], { type: 'image/svg+xml' });
+        const formData = new FormData();
+        formData.append('svg', blob, `design_${colorName}.svg`);
+
+        // Add beadHeight to formData
+        const beadHeight = 5.2; 
+        formData.append('beadHeight', beadHeight);
+
+        // Generate the filename based on project name, color, and version
+        const filename = `${projectName.toLowerCase().replace(/\s+/g, '_')}_${colorName}_${version}.stl`;
+
+        try {
+            const response = await axios.post('http://localhost:3001/convert-svg-to-stl', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                responseType: 'blob',
+            });
+            FileSaver.saveAs(response.data, filename);
+        } catch (error) {
+            console.error(`Error exporting STL for color ${colorName}:`, error);
+        }
+
+        // Add back the removed beads and gridLines
+        beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));
+        gridLinesToRemove.forEach(gridLine => paper.project.activeLayer.addChild(gridLine));
     }
-  
+
     paper.view.zoom = prevZoom;
-  };  
+};
 
   const handleExportSVG = (selectedColor) => {
     const prevZoom = paper.view.zoom;

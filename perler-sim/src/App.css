@@ -104,7 +104,7 @@ html, body, #root, .App{
   width: 300px;
   background: rgba(255, 255, 255, 0.90);
   box-shadow: 0px 0px 10px 0 rgba(0,0,0,0.1);
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
 }
 .submenu-label{
   font-family: 'Roboto', sans-serif;
@@ -133,7 +133,7 @@ html, body, #root, .App{
 }
 .controls{
   position: absolute;
-  top: 0;
+  top: -5px;
   left: 0;
   z-index: 100; 
   width: 20%;

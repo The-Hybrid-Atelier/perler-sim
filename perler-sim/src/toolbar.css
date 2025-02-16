@@ -1,7 +1,7 @@
 .tools-bar {
     position: absolute;
     left: 10px; /* Adjust as needed */
-    top: 50px; /* Adjust as needed */
+    top: 20px; /* Adjust as needed */
     background-color: #f0f0f0; /* Adjust as needed */
     padding: 10px;
     display: flex;

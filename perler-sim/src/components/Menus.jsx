@@ -33,6 +33,7 @@ const ColorPicker = ({ selectedColor, setSelectedColor }) => {
             className={`bead ${selectedColor === color ? "active" : ""}`}
             style={{ backgroundColor: color}}
             onClick={() => setSelectedColor(color)}
+            aria-label={`Select ${color} color`}
           >
             <div className='hole'></div>
           </button>
@@ -76,10 +77,10 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
         {/* TOOLS */}
         <ToolBarSubMenu id="Tools" name='Tools'>
           <LabeledParameter label='Project Name'>
-            <Input type="text" value={projectName} onChange={(e)=>setProjectName(e.target.value)}/>
+            <Input id="project-name" type="text" value={projectName} onChange={(e)=>setProjectName(e.target.value)}/>
           </LabeledParameter>
           <LabeledParameter label='Version'>
-            <Input type="number" value={version} onChange={(e)=>setVersion(e.target.value)}/>
+            <Input id="version" type="number" value={version} onChange={(e)=>setVersion(e.target.value)}/>
           </LabeledParameter>
           <LabeledParameter label='Controls'>
           <PaperControls projectName={projectName} version={version} selectedColor={selectedColor} beadParameters={beadParameters} />
@@ -88,16 +89,16 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
             <ZoomControls />
           </LabeledParameter>
           <LabeledParameter label='MarqueePlace'>
-            <Button color={currentTool === "fillTool" ? "green" : ""} icon onClick={() => setCurrentTool("fillTool")}><LuPaintBucket /></Button>
+            <Button aria-label='Marquee Place' color={currentTool === "fillTool" ? "green" : ""} icon onClick={() => setCurrentTool("fillTool")}><LuPaintBucket /></Button>
           </LabeledParameter>
           <LabeledParameter label='BrushPlace'>
-            <Button color={currentTool === "brushTool" ? "green" : ""} icon onClick={() => setCurrentTool("brushTool")}><IoBrushOutline /></Button>
+            <Button aria-label='Bursh Place'color={currentTool === "brushTool" ? "green" : ""} icon onClick={() => setCurrentTool("brushTool")}><IoBrushOutline /></Button>
           </LabeledParameter>
           <LabeledParameter label='BeadPlace'>
-            <Button color={currentTool === "beadTool" ? "green" : ""} icon onClick={() => setCurrentTool("beadTool")}><PiCylinderFill /></Button>
+            <Button aria-label='Bead Place' color={currentTool === "beadTool" ? "green" : ""} icon onClick={() => setCurrentTool("beadTool")}><PiCylinderFill /></Button>
           </LabeledParameter>
           <LabeledParameter label='Pan'>
-            <Button color={currentTool === "panTool" ? "green" : ""} icon onClick={() => setCurrentTool("panTool")}><IoMoveSharp /> </Button>
+            <Button aria-label='Pan' color={currentTool === "panTool" ? "green" : ""} icon onClick={() => setCurrentTool("panTool")}><IoMoveSharp /> </Button>
           </LabeledParameter>
         </ToolBarSubMenu>
 
@@ -114,6 +115,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
                     maxValue={25}
                     stepValue={1}
                     parser={parseInt}
+                    label='Size'
                 />
                 {beadParameters.gridSize.toFixed(0)} x {beadParameters.gridSize.toFixed(0)}
             </LabeledParameter>
@@ -126,6 +128,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
                     minValue={-1} 
                     maxValue={1.5}
                     stepValue={0.05}
+                    label='Spacing'
                 />
                 {beadParameters.beadSpacing.toFixed(2)} mm
             </LabeledParameter>
@@ -138,6 +141,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
                     minValue={0} 
                     maxValue={1}
                     stepValue={0.1}
+                    label='Visibility'
                 />
                 <Button basic icon={`eye ${gridVisible ? "" : "slash"}`} onClick={()=>setGridVisible(!gridVisible)}/>
             </LabeledParameter>
@@ -145,9 +149,9 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
             
             <LabeledParameter label='Shape'>
                 <ButtonGroup>
-                    <Button color='red' icon onClick={() => setCreateGridType('square')}><FaRegSquare /></Button>
-                    <Button color='green' icon onClick={() => setCreateGridType('circular')}><FaRegCircle /></Button>
-                    <Button color='blue' icon onClick={() => setCreateGridType('hexagonal')}><FiHexagon /></Button> 
+                    <Button aria-label='Square Pegboard' color='red' icon onClick={() => setCreateGridType('square')}><FaRegSquare /></Button>
+                    <Button aria-label='Circle Pegboard'color='green' icon onClick={() => setCreateGridType('circular')}><FaRegCircle /></Button>
+                    <Button aria-label='Hexagonal Pegboard' color='blue' icon onClick={() => setCreateGridType('hexagonal')}><FiHexagon /></Button> 
                 </ButtonGroup>
                 <Label basic>{beadParameters.createGridType}</Label>
             </LabeledParameter>
@@ -166,6 +170,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
                 minValue={0.1} 
                 maxValue={beadParameters.outer_radius}
                 stepValue={0.05}
+                label='Thickness'
             />
             {beadParameters.thickness.toFixed(2)} mm
             </LabeledParameter>
@@ -177,6 +182,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
                     minValue={1} 
                     maxValue={10} 
                     stepValue={0.1}
+                    label='Height'
                 />
                 {beadParameters.beadHeight.toFixed(2)} mm
             </LabeledParameter>

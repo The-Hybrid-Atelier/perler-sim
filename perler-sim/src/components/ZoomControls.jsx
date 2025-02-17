@@ -9,10 +9,10 @@ const ZoomControls = () => {
 
     return (
         <ButtonGroup>
-            <Button primary icon onClick={() => zoomInteraction(0.9)}>
+            <Button aria-label='zoom out' primary icon onClick={() => zoomInteraction(0.9)}>
                 <Icon name='zoom out' />
             </Button>
-            <Button primary icon onClick={() => zoomInteraction(1.1)}>
+            <Button aria-label='zoom in' primary icon onClick={() => zoomInteraction(1.1)}>
                 <Icon name='zoom in' />
             </Button>
         </ButtonGroup>

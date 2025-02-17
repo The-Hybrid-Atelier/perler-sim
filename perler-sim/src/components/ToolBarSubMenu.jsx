@@ -23,6 +23,7 @@ const ToolBarSubMenu = ({ name, children, initVisible = true}) => {
             basic
             icon={`${isVisible ? "minus" : "plus"}`}
             onClick={() => setIsVisible(!isVisible)} 
+            aria-label={`Toggle ${name} submenu`}
             />
         </div>
         <div className={`submenu-content ccfs ${isVisible ? 'visible' : 'hidden'}`}>

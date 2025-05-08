@@ -7,10 +7,14 @@ function titleToHyphenated(title) {
 }
 
 const LabeledParameter = ({label, children}) => {
+  const id = titleToHyphenated(label);
+  const childWithId = React.isValidElement(children)
+    ? React.cloneElement(children, { id })
+    : children;
   return (
     <div className="crsb fw parameter">
-      <label for={titleToHyphenated(label)}>{label}</label>
-      {children}
+      <label htmlFor={id}>{label}</label>
+      {childWithId}
     </div>
   )
 }
@@ -27,7 +31,10 @@ const ParameterSlider = ({ label, value, setValue, minValue, maxValue, stepValue
         max={maxValue}
         step={stepValue}
         onChange={handleChange}
-        for={titleToHyphenated(label)}
+        aria-valuemin={minValue}
+        aria-valuemax={maxValue}
+        aria-valuenow={value}
+        aria-label={`${label}: ${value}`}
       />
 
   );

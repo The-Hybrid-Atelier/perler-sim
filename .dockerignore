@@ -1,0 +1,44 @@
+# Node modules and build artifacts
+node_modules/
+build/
+dist/
+
+# OS and editor-specific junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.log
+*.tmp
+
+# Git and VCS
+.git
+.gitignore
+.gitattributes
+
+# Docker itself
+Dockerfile*
+.dockerignore
+
+# Dependency lock files (optional, if you want fresh installs inside image)
+# package-lock.json
+# yarn.lock
+
+# Testing/output files
+coverage/
+*.test.js
+*.spec.js
+*.vtt
+*.stl
+*.scad
+
+# Codespaces / Devcontainer
+.devcontainer/
+.vscode/
+
+# Env and secret files
+.env
+.env.*
+*.pem
+*.key
+*.crt

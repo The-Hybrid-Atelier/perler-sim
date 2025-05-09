@@ -180,7 +180,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
                     value={beadParameters.beadHeight} 
                     setValue={setBeadHeight} 
                     minValue={1} 
-                    maxValue={10} 
+                    maxValue={20} 
                     stepValue={0.1}
                     label='Height'
                 />

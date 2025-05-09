@@ -76,3 +76,5 @@ client-python/libraries/__pycache__/rheosense.cpython-310.pyc
 .DS_Store
 *.pyc
 *.pyc
+
+build

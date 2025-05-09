@@ -3,7 +3,7 @@ import { Icon, Button, Modal, ButtonGroup } from 'semantic-ui-react';
 import paper from 'paper';
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import { BEAD_COLORS, BEAD_COLORS_NAMES } from '../AppConfig.jsx';
+import { BEAD_COLORS, BEAD_COLORS_NAMES, getApiBaseUrl} from '../AppConfig.jsx';
 
 const exportSVG = () => {
   return paper.project.exportSVG({ asString: true });
@@ -51,11 +51,14 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
         const filename = `${projectName.toLowerCase().replace(/\s+/g, '_')}_${colorName}_${version}.stl`;
 
         try {
-            const response = await axios.post('http://localhost:3001/convert-svg-to-stl', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-                responseType: 'blob',
-            });
-            FileSaver.saveAs(response.data, filename);
+          const apiBase = getApiBaseUrl();
+
+          const response = await axios.post(`${apiBase}/convert-svg-to-stl`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            responseType: 'blob',
+          });
+        
+          FileSaver.saveAs(response.data, filename);
         } catch (error) {
             console.error(`Error exporting STL for color ${colorName}:`, error);
         }

@@ -1,0 +1,25 @@
+{
+  "name": "FuseBlocks",
+  "forwardPorts": [3000, 3001],
+  "portsAttributes": {
+    "3000": {
+      "label": "Frontend",
+      "onAutoForward": "openPreview",
+      "visibility": "public"
+    },
+    "3001": {
+      "label": "Backend API",
+      "onAutoForward": "openPreview",
+      "visibility": "public"
+    }
+  },
+  "postCreateCommand": "npm install",
+  "customizations": {
+    "vscode": {
+      "settings": {}
+    }
+  },
+  "build": {
+    "dockerfile": "Dockerfile"
+  }
+}

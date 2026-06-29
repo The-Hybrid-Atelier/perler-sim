@@ -117,46 +117,68 @@ html, body, #root, .App{
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  background: #f5f5f7;
 }
 
 .landing-panel{
-  width: min(520px, 100%);
-  padding: 2rem;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  width: min(680px, 100%);
+  padding: 3rem 2rem;
+  text-align: center;
 }
 
 .landing-panel h2{
-  margin: 0 0 0.75rem;
-  font-size: 2rem;
+  margin: 0 0 2rem;
+  font-size: 5rem;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: #111;
+}
+
+@media (max-width: 600px) {
+  .landing-panel{
+    padding: 2rem 1rem;
+  }
+
+  .landing-panel h2{
+    font-size: 3.2rem;
+  }
+
 }
 
 .landing-panel p{
-  margin: 0 0 1.25rem;
-  color: #333;
+  max-width: 420px;
+  margin: 0 auto 2rem;
+  color: #4a4a4f;
+  font-size: 1.22rem;
+  line-height: 1.45;
 }
 
 .auth-error{
-  color: #8b0000;
+  padding: 0.75rem 1rem;
+  color: #7f1d1d;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
   font-weight: 700;
 }
 
 .github-sign-in{
-  min-height: 44px;
-  padding: 0 1rem;
+  min-height: 52px;
+  padding: 0 1.5rem;
   border: 0;
-  border-radius: 4px;
-  background: #111;
+  border-radius: 999px;
+  background: #0071e3;
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0,113,227,0.24);
 }
 
 .github-sign-in:hover,
 .github-sign-in:focus{
-  background: #333;
+  background: #0077ed;
 }
 
 .user-session{

@@ -28,13 +28,12 @@ function LandingPage({ authError, onSignIn }) {
   return (
     <main id="main-content" className="landing-page" tabIndex="-1">
       <section className="landing-panel" aria-labelledby="landing-title">
-        <h2 id="landing-title">Perler Bead Design Tool</h2>
-        <p>Create bead layouts, export SVG files, and generate STL models.</p>
+        <h2 id="landing-title">Beadle</h2>
         {authError &&
-          <p className="auth-error" role="alert">GitHub sign-in failed. Try again.</p>
+          <p className="auth-error" role="alert">GitHub sign-in did not finish. Try again.</p>
         }
         <button className="github-sign-in" onClick={onSignIn}>
-          Sign in with GitHub
+          Continue with GitHub
         </button>
       </section>
     </main>
@@ -392,7 +391,7 @@ function App() {
     <div className="App">
       <header>
         <a className="skip-link" href="#main-content">Skip to main content</a>
-        <h1 className="visually-hidden">Perler Bead Design Tool</h1>
+        <h1 className="visually-hidden">Beadle</h1>
       </header>
       {isAuthenticated &&
         <aside className="controls fh" aria-label="Design controls">

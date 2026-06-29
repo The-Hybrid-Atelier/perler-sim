@@ -56,6 +56,7 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
           const response = await axios.post(`${apiBase}/convert-svg-to-stl`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             responseType: 'blob',
+            withCredentials: true,
           });
         
           FileSaver.saveAs(response.data, filename);

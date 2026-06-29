@@ -107,7 +107,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
 
          
          {/* PEGBOARD */}
-         <ToolBarSubMenu id="PegboardControls" name='Pegboard' initVisible={true}>
+         <ToolBarSubMenu id="PegboardControls" name='Pegboard Controls' initVisible={false}>
  
             <LabeledParameter label='Size'>
                 <ParameterSlider 
@@ -168,7 +168,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
         
 
         {/* BEADS */}
-        <ToolBarSubMenu id="BeadControls" name='Beads'>
+        <ToolBarSubMenu id="BeadControls" name='Bead Controls' initVisible={false}>
             <LabeledParameter label='Thickness'>
 
             <ParameterSlider 

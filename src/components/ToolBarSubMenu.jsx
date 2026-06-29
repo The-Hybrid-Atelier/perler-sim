@@ -5,6 +5,7 @@ import Draggable from 'react-draggable';
 
 const ToolBarSubMenu = ({ name, children, initVisible = true}) => {
   const [isVisible, setIsVisible] = useState(initVisible);
+  const className = name.toLowerCase().replace(/\s+/g, '-');
 
   return (
     <Draggable
@@ -14,7 +15,7 @@ const ToolBarSubMenu = ({ name, children, initVisible = true}) => {
         scale={1}
         
     >
-      <div className={`submenu ${name.toLowerCase()}`}>
+      <div className={`submenu ${className}`}>
         <div className="submenu-label handle crsb">
           {name.toUpperCase()}
           <Button 

@@ -45,8 +45,9 @@ function PaperCanvas({ setPaperReady, children}) {
     return () => {
       canvas.removeEventListener("contextmenu", preventContextMenu);
       window.removeEventListener('resize', resizeCanvas);
+      setPaperReady(false);
     };
-  }, []);
+  }, [setPaperReady]);
 
 
   return (
@@ -58,7 +59,6 @@ function PaperCanvas({ setPaperReady, children}) {
 }
 
 export { PaperCanvas };
-
 
 
 

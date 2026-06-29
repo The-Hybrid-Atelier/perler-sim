@@ -66,6 +66,55 @@ const formatDateTime = (value) => {
   return new Date(value).toLocaleString();
 };
 
+const getDayKey = (value) => new Date(value).toISOString().slice(0, 10);
+
+const getRecentDays = (dayCount = 14) => {
+  const days = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (let i = dayCount - 1; i >= 0; i--) {
+    const day = new Date(today);
+    day.setDate(today.getDate() - i);
+    days.push(day.toISOString().slice(0, 10));
+  }
+
+  return days;
+};
+
+const buildMetricsFromEntries = (entries) => {
+  const days = getRecentDays();
+  const activeUsersByDay = new Map(days.map(day => [day, new Set()]));
+  const stlDownloadsByDay = new Map(days.map(day => [day, 0]));
+  const activeUsers = new Set();
+  const now = Date.now();
+  let totalStlDownloads = 0;
+
+  entries.forEach(entry => {
+    const loginDay = getDayKey(entry.loginAt);
+    if (activeUsersByDay.has(loginDay)) {
+      activeUsersByDay.get(loginDay).add(entry.user.login);
+    }
+
+    const stlCount = entry.downloads?.stl || 0;
+    totalStlDownloads += stlCount;
+    if (stlDownloadsByDay.has(loginDay)) {
+      stlDownloadsByDay.set(loginDay, stlDownloadsByDay.get(loginDay) + stlCount);
+    }
+
+    if (entry.active && now - new Date(entry.lastSeenAt).getTime() < 15 * 60 * 1000) {
+      activeUsers.add(entry.user.login);
+    }
+  });
+
+  return {
+    activeUsersByDay: days.map(day => ({ day, value: activeUsersByDay.get(day).size })),
+    stlDownloadsByDay: days.map(day => ({ day, value: stlDownloadsByDay.get(day) })),
+    currentActiveUsers: activeUsers.size,
+    totalStlDownloads,
+  };
+};
+
 function StatCard({ label, value }) {
   return (
     <div className="stat-card">
@@ -123,14 +172,20 @@ function AdminDashboard({ apiBase, currentUser, onBack }) {
         return response.json();
       });
 
-    Promise.all([
-      fetchJson('/api/admin/access-log'),
-      fetchJson('/api/admin/metrics'),
-    ])
-      .then(([accessLog, dashboardMetrics]) => {
-        setEntries(accessLog.entries);
-        setMetrics(dashboardMetrics);
+    fetchJson('/api/admin/access-log')
+      .then(accessLog => {
+        const accessEntries = accessLog.entries || [];
+        setEntries(accessEntries);
+        setMetrics(buildMetricsFromEntries(accessEntries));
         setStatus('ready');
+
+        return fetchJson('/api/admin/metrics')
+          .then(dashboardMetrics => {
+            setMetrics(dashboardMetrics);
+          })
+          .catch(error => {
+            setErrorMessage(`${error.message}. Charts are estimated from the access log.`);
+          });
       })
       .catch(error => {
         setErrorMessage(error.message);
@@ -171,8 +226,10 @@ function AdminDashboard({ apiBase, currentUser, onBack }) {
         <p>Loading access history...</p>
       }
 
-      {status === 'error' &&
-        <p className="dashboard-error" role="alert">{errorMessage}. Showing the active admin session only.</p>
+      {errorMessage &&
+        <p className="dashboard-error" role="alert">
+          {errorMessage}{status === 'error' ? '. Showing the active admin session only.' : ''}
+        </p>
       }
 
       {metrics &&
@@ -319,6 +376,16 @@ function App() {
     setPaperReady(false);
   };
 
+  const openDashboard = () => {
+    setPaperReady(false);
+    setScreen('dashboard');
+  };
+
+  const backToEditor = () => {
+    setPaperReady(false);
+    setScreen(START_SCREEN);
+  };
+
   const isAuthenticated = authStatus === 'authenticated';
 
   return (
@@ -329,7 +396,7 @@ function App() {
       </header>
       {isAuthenticated &&
         <aside className="controls fh" aria-label="Design controls">
-          <UserSession user={currentUser} onLogout={logout} onOpenDashboard={() => setScreen('dashboard')} />
+          <UserSession user={currentUser} onLogout={logout} onOpenDashboard={openDashboard} />
           {appScreen === START_SCREEN &&
             <Menus
                 paper={paperReady}
@@ -352,7 +419,7 @@ function App() {
         <LandingPage authError={authError} onSignIn={signInWithGitHub} />
       }
       {isAuthenticated && currentUser?.isAdmin && appScreen === "dashboard" &&
-          <AdminDashboard apiBase={apiBase} currentUser={currentUser} onBack={() => setScreen(START_SCREEN)} />
+          <AdminDashboard apiBase={apiBase} currentUser={currentUser} onBack={backToEditor} />
       }
       {isAuthenticated && appScreen === START_SCREEN &&
           <main id="main-content" className="fw fh" tabIndex="-1">

@@ -7,6 +7,32 @@ html, body, #root, .App{
   width: 100%;
   background: #F5F5F5;
 }
+.visually-hidden{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link{
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 20000;
+  padding: 0.75rem 1rem;
+  background: #111;
+  color: #fff;
+  border-radius: 4px;
+  transform: translateY(-150%);
+  transition: transform 0.15s ease;
+}
+.skip-link:focus{
+  transform: translateY(0);
+}
 .cc{
   display: flex;
   flex-flow: column nowrap;
@@ -54,7 +80,35 @@ html, body, #root, .App{
   color: #333;
 }
 .parameter{
-  min-height: 40px;
+  min-height: 44px;
+  gap: 0.5rem;
+}
+
+.controls button,
+.controls .ui.button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.controls .ui.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls .ui.icon.button {
+  padding: 0;
+}
+
+.controls .ui.red.button.restart-button {
+  background-color: #9f1111;
+  color: #fff;
+}
+
+.controls .ui.red.button.restart-button:hover,
+.controls .ui.red.button.restart-button:focus {
+  background-color: #7f0d0d;
+  color: #fff;
 }
 
 .bead.active{
@@ -69,16 +123,16 @@ html, body, #root, .App{
   justify-content: center;
   align-items: center;
   border-radius: 100px;
-  width: 30px;
-  height: 30px; 
+  width: 44px;
+  height: 44px; 
   margin: 5px;
   border: 1px solid black;
   box-shadow: 0px 0px 5px 0 rgba(0,0,0,0.1);
 }
 .bead .hole{
   border-radius: 100px;
-  width: 14px;
-  height: 14px; 
+  width: 20px;
+  height: 20px; 
   background: white;
   border: 1px solid black;
   box-shadow: inset 0px 0px 5px 0 rgba(0,0,0,0.1);

@@ -33,7 +33,11 @@ function App() {
 
   return (
     <div className="App">
-      <div className="controls fh">
+      <header>
+        <a className="skip-link" href="#main-content">Skip to main content</a>
+        <h1 className="visually-hidden">Perler Bead Design Tool</h1>
+      </header>
+      <aside className="controls fh" aria-label="Design controls">
         <Menus
             paper={paperReady}
             beadParameters={beadParameters}
@@ -43,19 +47,21 @@ function App() {
             gridVisible={gridVisible}  
             setGridVisible={setGridVisible}
           />
-      </div>
+      </aside>
       {appScreen === "paper" &&
-        <View icon="" goToScreen="" screen={appScreen} setScreen={setScreen}>
-          
-          <DirectManipulation
-            paperReady={paperReady}
-            selectedColor={selectedColor}
-            beadParametersMM={beadParameters}
-            gridVisible={gridVisible}  
-          />
+        <main id="main-content" className="fw fh" tabIndex="-1">
+          <View icon="" goToScreen="" screen={appScreen} setScreen={setScreen}>
+            
+            <DirectManipulation
+              paperReady={paperReady}
+              selectedColor={selectedColor}
+              beadParametersMM={beadParameters}
+              gridVisible={gridVisible}  
+            />
 
-          <PaperCanvas setPaperReady={setPaperReady}></PaperCanvas>
-        </View>
+            <PaperCanvas setPaperReady={setPaperReady}></PaperCanvas>
+          </View>
+        </main>
       }
     </div>
   );

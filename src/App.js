@@ -41,7 +41,213 @@ function LandingPage({ authError, onSignIn }) {
   );
 }
 
-function UserSession({ user, onLogout }) {
+const formatDuration = (durationMs) => {
+  const totalSeconds = Math.max(0, Math.floor(durationMs / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+
+  if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  }
+
+  return `${seconds}s`;
+};
+
+const formatDateTime = (value) => {
+  if (!value) {
+    return 'Still active';
+  }
+
+  return new Date(value).toLocaleString();
+};
+
+function StatCard({ label, value }) {
+  return (
+    <div className="stat-card">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function BarChart({ title, description, data }) {
+  const maxValue = Math.max(...data.map(point => point.value), 1);
+
+  return (
+    <section className="chart-panel" aria-labelledby={`${title.toLowerCase().replace(/\s+/g, '-')}-title`}>
+      <div className="chart-heading">
+        <h3 id={`${title.toLowerCase().replace(/\s+/g, '-')}-title`}>{title}</h3>
+        <p>{description}</p>
+      </div>
+      <div className="bar-chart" role="list">
+        {data.map(point => {
+          const height = `${Math.max((point.value / maxValue) * 100, point.value > 0 ? 8 : 2)}%`;
+          return (
+            <div className="bar-column" role="listitem" key={point.day}>
+              <span className="bar-value">{point.value}</span>
+              <div className="bar-track">
+                <div className="bar-fill" style={{ height }} />
+              </div>
+              <span className="bar-label">{new Date(`${point.day}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function AdminDashboard({ apiBase, currentUser, onBack }) {
+  const [entries, setEntries] = useState([]);
+  const [metrics, setMetrics] = useState(null);
+  const [status, setStatus] = useState('loading');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    const fetchJson = (path) => fetch(`${apiBase}${path}`, {
+      credentials: 'include',
+    })
+      .then(response => {
+        const contentType = response.headers.get('content-type') || '';
+        if (!response.ok) {
+          throw new Error(`Unable to load dashboard data (${response.status})`);
+        }
+        if (!contentType.includes('application/json')) {
+          throw new Error(`Dashboard API returned ${contentType || 'non-JSON content'}`);
+        }
+        return response.json();
+      });
+
+    Promise.all([
+      fetchJson('/api/admin/access-log'),
+      fetchJson('/api/admin/metrics'),
+    ])
+      .then(([accessLog, dashboardMetrics]) => {
+        setEntries(accessLog.entries);
+        setMetrics(dashboardMetrics);
+        setStatus('ready');
+      })
+      .catch(error => {
+        setErrorMessage(error.message);
+        setEntries([{
+          sessionId: 'current-session',
+          user: currentUser,
+          loginAt: new Date().toISOString(),
+          lastSeenAt: new Date().toISOString(),
+          logoutAt: null,
+          active: true,
+          durationMs: 0,
+          downloads: {
+            svg: 0,
+            stl: 0,
+          },
+        }]);
+        setMetrics({
+          activeUsersByDay: [],
+          stlDownloadsByDay: [],
+          currentActiveUsers: 1,
+          totalStlDownloads: 0,
+        });
+        setStatus('error');
+      });
+  }, [apiBase, currentUser]);
+
+  return (
+    <main id="main-content" className="admin-dashboard" tabIndex="-1">
+      <div className="dashboard-header">
+        <div>
+          <h2>Admin dashboard</h2>
+          <p>App access history for this server session.</p>
+        </div>
+        <button type="button" onClick={onBack}>Back to editor</button>
+      </div>
+
+      {status === 'loading' &&
+        <p>Loading access history...</p>
+      }
+
+      {status === 'error' &&
+        <p className="dashboard-error" role="alert">{errorMessage}. Showing the active admin session only.</p>
+      }
+
+      {metrics &&
+        <>
+          <section className="stats-grid" aria-label="Dashboard summary">
+            <StatCard label="Active now" value={metrics.currentActiveUsers} />
+            <StatCard label="STLs downloaded" value={metrics.totalStlDownloads} />
+          </section>
+
+          <div className="charts-grid">
+            <BarChart
+              title="Active users"
+              description="Unique users who started a session each day."
+              data={metrics.activeUsersByDay}
+            />
+            <BarChart
+              title="STL downloads"
+              description="STL files downloaded each day."
+              data={metrics.stlDownloadsByDay}
+            />
+          </div>
+        </>
+      }
+
+      {(status === 'ready' || status === 'error') &&
+        <div className="dashboard-table-wrapper">
+          <table className="dashboard-table">
+            <caption>GitHub users who accessed the app</caption>
+            <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col">Role</th>
+                <th scope="col">Signed in</th>
+                <th scope="col">Last activity</th>
+                <th scope="col">Signed out</th>
+                <th scope="col">Duration</th>
+                <th scope="col">SVG downloads</th>
+                <th scope="col">STL downloads</th>
+              </tr>
+            </thead>
+            <tbody>
+              {entries.map(entry => (
+                <tr key={entry.sessionId}>
+                  <td>
+                    <div className="dashboard-user">
+                      {entry.user.avatarUrl &&
+                        <img src={entry.user.avatarUrl} alt="" />
+                      }
+                      <div>
+                        <strong>{entry.user.name || entry.user.login}</strong>
+                        <span>@{entry.user.login}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{entry.user.isAdmin ? 'Admin' : 'User'}</td>
+                  <td>{formatDateTime(entry.loginAt)}</td>
+                  <td>{formatDateTime(entry.lastSeenAt)}</td>
+                  <td>{formatDateTime(entry.logoutAt)}</td>
+                  <td>{entry.active ? `${formatDuration(entry.durationMs)} active` : formatDuration(entry.durationMs)}</td>
+                  <td>{entry.downloads?.svg || 0}</td>
+                  <td>{entry.downloads?.stl || 0}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {entries.length === 0 &&
+            <p>No access history yet.</p>
+          }
+        </div>
+      }
+    </main>
+  );
+}
+
+function UserSession({ user, onLogout, onOpenDashboard }) {
   return (
     <div className="user-session" aria-label="Signed-in user">
       {user.avatarUrl &&
@@ -53,6 +259,9 @@ function UserSession({ user, onLogout }) {
           <span>THA admin</span>
         }
       </div>
+      {user.isAdmin &&
+        <button type="button" onClick={onOpenDashboard}>Dashboard</button>
+      }
       <button type="button" onClick={onLogout}>Log out</button>
     </div>
   );
@@ -106,6 +315,7 @@ function App() {
     });
     setCurrentUser(null);
     setAuthStatus('anonymous');
+    setScreen(START_SCREEN);
     setPaperReady(false);
   };
 
@@ -119,16 +329,18 @@ function App() {
       </header>
       {isAuthenticated &&
         <aside className="controls fh" aria-label="Design controls">
-          <UserSession user={currentUser} onLogout={logout} />
-          <Menus
-              paper={paperReady}
-              beadParameters={beadParameters}
-              setBeadParameters={setBeadParameters}
-              selectedColor={selectedColor}
-              setSelectedColor={setSelectedColor}
-              gridVisible={gridVisible}  
-              setGridVisible={setGridVisible}
-            />
+          <UserSession user={currentUser} onLogout={logout} onOpenDashboard={() => setScreen('dashboard')} />
+          {appScreen === START_SCREEN &&
+            <Menus
+                paper={paperReady}
+                beadParameters={beadParameters}
+                setBeadParameters={setBeadParameters}
+                selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+                gridVisible={gridVisible}  
+                setGridVisible={setGridVisible}
+              />
+          }
         </aside>
       }
       {authStatus === 'loading' &&
@@ -139,7 +351,10 @@ function App() {
       {authStatus === 'anonymous' &&
         <LandingPage authError={authError} onSignIn={signInWithGitHub} />
       }
-      {isAuthenticated && appScreen === "paper" &&
+      {isAuthenticated && currentUser?.isAdmin && appScreen === "dashboard" &&
+          <AdminDashboard apiBase={apiBase} currentUser={currentUser} onBack={() => setScreen(START_SCREEN)} />
+      }
+      {isAuthenticated && appScreen === START_SCREEN &&
           <main id="main-content" className="fw fh" tabIndex="-1">
             <View icon="" goToScreen="" screen={appScreen} setScreen={setScreen}>
               

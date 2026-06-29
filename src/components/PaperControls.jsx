@@ -9,6 +9,17 @@ const exportSVG = () => {
   return paper.project.exportSVG({ asString: true });
 };
 
+const trackSVGDownload = async (filename) => {
+  const apiBase = getApiBaseUrl();
+  try {
+    await axios.post(`${apiBase}/api/downloads/svg`, { filename }, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error('Error tracking SVG download:', error);
+  }
+};
+
 const PaperControls = ({  selectedColor, version, projectName, beadParameters }) => {
   console.log("PaperControls beadParameters:", beadParameters); // Debugging log
   const trashInteraction = () => {
@@ -72,7 +83,7 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
     paper.view.zoom = prevZoom;
 };
 
-  const handleExportSVG = (selectedColor) => {
+  const handleExportSVG = async (selectedColor) => {
     const prevZoom = paper.view.zoom;
     paper.view.zoom = 1;
     console.log("Selected color:", selectedColor, BEAD_COLORS);  // Check selectedColor value
@@ -99,6 +110,7 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
     console.log("Color name resolved:", colorName, selectedColor);  // Log the resolved color name
     console.log("Filename:", filename);  // Log the filename being used
     const blob = new Blob([svgString], { type: 'image/svg+xml' });
+    await trackSVGDownload(filename);
     FileSaver.saveAs(blob, filename);
 
     beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));

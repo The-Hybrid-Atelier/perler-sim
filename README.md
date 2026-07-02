@@ -1,92 +1,139 @@
-# Perler Sim
+# Beadle
 
-Perler Sim is a CAD tool built for modeling [fuse bead](https://perler.com/?srsltid=AfmBOoqfjCOJrdHmXm2ufHMd7ceR55HSGNyz2w-Byvg2-qQMAKOUnya2) modules. The tool provides an easy way to design fuse bead art and generate 3D models for 3D printing.
+> **Repository name:** `perler-sim` (legacy repository name retained for compatibility).
 
-## Remote
+**Beadle** is an open-source computer-aided design (CAD) toolkit for designing modular fuse bead artwork and generating fabrication-ready 3D models. The software enables makers, educators, researchers, and designers to rapidly prototype fuse bead assemblies through an interactive browser-based interface with STL export for additive manufacturing.
 
-Navigate to:
-`cd perler-sim`
+Developed by [**The Hybrid Atelier**](https://hybridatelier.uta.edu/) in the Department of Computer Science and Engineering at **The University of Texas at Arlington**, Beadle accompanies our research on computational fabrication, digital craft, and creativity support tools.
+
+---
+
+## Authors
+
+* [Mariah Gardner](https://hybridatelier.uta.edu/members/180-mariah-gardner)
+* [Nasir Rakib](https://hybridatelier.uta.edu/members/128-nasir-rakib)
+* [Cesar Torres](https://hybridatelier.uta.edu/members/1-cesar-torres)
+
+---
+
+## Features
+
+* Interactive editor for creating fuse bead designs
+* Parametric modeling of bead assemblies
+* Real-time visual editing
+* STL export for 3D printing
+* Browser-based interface built with React
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/<YOUR_ORG>/perler-sim.git
+cd perler-sim
+```
 
 Install dependencies:
-`npm install`
 
-Run the web server:
-`npm start`
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm start
+```
+
+The application will be available at:
+
+```text
+http://localhost:3000
+```
+
+---
+
+## Building
+
+Create an optimized production build:
+
+```bash
+npm run build
+```
+
+The compiled application will be generated in the `build/` directory.
+
+---
 
 ## Usage
 
-- Design your fuse bead modules using the interactive tools provided in the web app.
-- Once your design is ready, save it as a `.stl` file.
-- You can now 3D print your design using any compatible 3D printer.
+1. Launch the application.
+2. Create or edit a fuse bead design using the interactive editor.
+3. Inspect the generated geometry.
+4. Export the design as an STL file.
+5. Slice the model using your preferred slicer.
+6. Fabricate using a compatible 3D printer.
 
+---
 
-# Getting Started with Create React App
+## Research
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Beadle was developed as part of ongoing research into computational fabrication, digital craft, and creativity support technologies.
 
-## Available Scripts
+If you use Beadle in academic work, please cite the accompanying publication.
 
-In the project directory, you can run:
+```bibtex
+% Citation will be added after publication.
+```
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Contributing
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+We welcome contributions of community-made designs! You can either submit a pull request via Github or send us a link to your Instructables, Thingiverse, or design files to hybrid.atelier.uta@gmail.com
 
-### `npm test`
+If you encounter a bug, discover an issue, or have a feature request, please open a GitHub Issue. Pull requests are also appreciated.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Before submitting a pull request, please ensure that:
 
-### `npm run build`
+* New functionality is documented.
+* Existing functionality continues to work as expected.
+* Code follows the project's existing style.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Development
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This project is built with:
 
-### `npm run eject`
+* React
+* Node.js
+* npm
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Useful commands:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+# Start development server
+npm start
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Run tests
+npm test
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# Create production build
+npm run build
+```
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## License
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This project is released under the MIT License. See the `LICENSE` file for details.
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Acknowledgments
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Beadle was developed within **The Hybrid Atelier** at **The University of Texas at Arlington**. This work was supported by the i-Engage program, the National
+Science Foundation under Grant No. CNS-2150321, and a Microsoft Research Accelerating Foundational Models Grant.

@@ -1,10 +1,10 @@
 # Beadle
-
-> **Repository name:** `perler-sim` (legacy repository name retained for compatibility).
+![FlexibleBeads](images/exemplars/FlexBeads.png)
 
 **Beadle** is an open-source computer-aided design (CAD) toolkit for designing modular fuse bead artwork and generating fabrication-ready 3D models. The software enables makers, educators, researchers, and designers to rapidly prototype fuse bead assemblies through an interactive browser-based interface with STL export for additive manufacturing.
 
 Developed by [**The Hybrid Atelier**](https://hybridatelier.uta.edu/) in the Department of Computer Science and Engineering at **The University of Texas at Arlington**, Beadle accompanies our research on computational fabrication, digital craft, and creativity support tools.
+> **Repository name:** `perler-sim` (legacy repository name retained for compatibility).
 
 ---
 

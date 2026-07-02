@@ -135,5 +135,4 @@ This project is released under the MIT License. See the `LICENSE` file for detai
 
 ## Acknowledgments
 
-Beadle was developed within **The Hybrid Atelier** at **The University of Texas at Arlington**. This work was supported by the i-Engage program, the National
-Science Foundation under Grant No. CNS-2150321, and a Microsoft Research Accelerating Foundational Models Grant.
+Beadle was developed within **The Hybrid Atelier** at **The University of Texas at Arlington**. This work was supported by the i-Engage program, the National Science Foundation under Grant No. CNS-2150321, and a Microsoft Research Accelerating Foundational Models Grant.

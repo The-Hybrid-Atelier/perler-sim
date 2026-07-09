@@ -201,6 +201,7 @@ const createPerlerBead = (paper, point, beadParameters) => {
 const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM = {}, gridVisible }) => {
   const savedBeads = useRef(new Map());
   const gridVisibleRef = useRef(gridVisible);
+  const activePaperRef = useRef(null);
   const {
     outer_radius,
     inner_radius,
@@ -222,9 +223,13 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
     if (paperReady && gridSize) {
       console.log("Loading FuseBlock")
       const paper = paperReady;
+      const isNewPaper = activePaperRef.current !== paper;
+      activePaperRef.current = paper;
       saveBeadProgress(paper, savedBeads);
       paper.project.clear();
-      paper.view.zoom = 10;
+      if (isNewPaper) {
+        paper.view.zoom = 10;
+      }
       
       const beadParameters = convertBeadParameters({
         outer_radius,

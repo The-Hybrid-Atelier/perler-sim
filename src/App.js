@@ -329,15 +329,12 @@ function App() {
   const [selectedColor, setSelectedColor] = useState(BEAD_COLORS[0]);
   const [beadParameters, setBeadParameters] = useState(defaultBeadParameters);
   const [gridVisible, setGridVisible] = useState(true);
-  const requireAuth = process.env.REACT_APP_REQUIRE_AUTH === 'true';
-  const [authStatus, setAuthStatus] = useState(requireAuth ? 'loading' : 'guest');
+  const [authStatus, setAuthStatus] = useState('loading');
   const [currentUser, setCurrentUser] = useState(null);
   const [authError, setAuthError] = useState(false);
   const apiBase = getApiBaseUrl();
 
   useEffect(() => {
-    if (!requireAuth) return;
-
     const params = new URLSearchParams(window.location.search);
     if (params.has('auth')) {
       setAuthError(true);
@@ -350,14 +347,16 @@ function App() {
         if (data.authenticated) {
           setCurrentUser(data.user);
           setAuthStatus('authenticated');
-        } else {
+        } else if (data.authRequired) {
           setAuthStatus('anonymous');
+        } else {
+          setAuthStatus('guest');
         }
       })
       .catch(() => {
-        setAuthStatus('anonymous');
+        setAuthStatus('guest');
       });
-  }, [apiBase, requireAuth]);
+  }, [apiBase]);
 
   const signInWithGitHub = () => {
     window.location.href = `${apiBase}/auth/github`;

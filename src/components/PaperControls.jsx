@@ -10,7 +10,6 @@ const exportSVG = () => {
 };
 
 const PaperControls = ({  selectedColor, version, projectName, beadParameters }) => {
-  console.log("PaperControls beadParameters:", beadParameters); // Debugging log
   const trashInteraction = () => {
     paper.project.clear();
   };
@@ -30,8 +29,6 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
                 return item.visible === false || (item.fillColor && item.fillColor.toCSS(true) !== color);
             },
         });
-
-        console.log(`Beads to remove (${beadsToRemove.length}):`, beadsToRemove);
 
         // Filter out GridLines
         const gridLinesToRemove = paper.project.getItems({
@@ -74,8 +71,6 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
   const handleExportSVG = (selectedColor) => {
     const prevZoom = paper.view.zoom;
     paper.view.zoom = 1;
-    console.log("Selected color:", selectedColor, BEAD_COLORS);  // Check selectedColor value
-    
     const colorIndex = BEAD_COLORS.findIndex(element => element === selectedColor);
     const colorName = BEAD_COLORS_NAMES[colorIndex];
     const filename = `${projectName.toLowerCase().replace(/\s+/g, '_')}_${colorName}_${version}.svg`;
@@ -95,8 +90,6 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
     gridLinesToRemove.forEach(gridLine => gridLine.remove());
 
     const svgString = exportSVG();
-    console.log("Color name resolved:", colorName, selectedColor);  // Log the resolved color name
-    console.log("Filename:", filename);  // Log the filename being used
     const blob = new Blob([svgString], { type: 'image/svg+xml' });
     FileSaver.saveAs(blob, filename);
 

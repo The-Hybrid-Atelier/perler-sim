@@ -67,14 +67,10 @@ yarn-debug.log*
 /storage/*
 !/storage/.keep
 /public/uploads
-<<<<<<< HEAD
-client-python/libraries/__pycache__/rheosense.cpython-310.pyc
-client-python/libraries/__pycache__/rheosense.cpython-310.pyc
-=======
-*.pyc
->>>>>>> cee4c3f8fc5cb93b0aa96a7d8c0634f9da18da3a
 .DS_Store
-*.pyc
 *.pyc
 
 build
+.env.claude
+.env.development
+.env.production

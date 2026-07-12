@@ -24,7 +24,6 @@ const createGrid = (paper, beadParameters) => {
   const startPoint = new paper.Point(startPointX, startPointY);
 
   for (let i = 0; i <= numCells; i++) {
-    console.log(". VERTICAL LINE", i);
     const y = startPoint.y + i * cellSize;
     const start = new paper.Point(startPoint.x, y);
     const end = new paper.Point(startPoint.x + gridSize, y);
@@ -161,14 +160,13 @@ const createPerlerBead = (paper, point, beadParameters) => {
 const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM, gridVisible }) => {
   useEffect(() => {
     if (paperReady && beadParametersMM) {
-      console.log("Loading FuseBlock")
       const paper = paperReady;
       paper.project.clear();
       paper.view.zoom = 10;
-      
+
       const beadParameters = convertBeadParameters(beadParametersMM);
       const createGridType = beadParameters.createGridType;
-      
+
       switch (createGridType) {
         case 'circular':
           createCircularGrid(paper, beadParameters);
@@ -177,11 +175,9 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
           createHexagonalGrid(paper, beadParameters);
           break;
         case 'grid':
-          console.log("GRID", beadParameters);
           createGrid(paper, beadParameters);
           break;
         default:
-          console.log("DEFAULT", beadParameters);
           createGrid(paper, beadParameters);
           break;
       }

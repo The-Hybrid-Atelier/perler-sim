@@ -21,7 +21,6 @@
         });
         return [points];
       };
-      console.log('Loading custom libraries!');
       if (!paper.Item.prototype.setRampPoint) {
         paper.Item.prototype.setRampPoint = function() {};
       }

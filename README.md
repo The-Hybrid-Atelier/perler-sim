@@ -26,44 +26,59 @@ Developed by [**The Hybrid Atelier**](https://hybridatelier.uta.edu/) in the Dep
 
 ---
 
-## Installation
+## Prerequisites
 
-Clone the repository:
+* [Node.js](https://nodejs.org/) 18+
+* [OpenSCAD](https://openscad.org/downloads.html) — required locally for STL export (`openscad` must be on your `PATH`)
+
+---
+
+## Installation
 
 ```bash
 git clone https://github.com/The-Hybrid-Atelier/perler-sim.git
 cd perler-sim
+make setup        # npm install + creates .env from .env.example
 ```
 
-Install dependencies:
+Edit `.env` if you want to enable optional features (see [Configuration](#configuration)).
+
+---
+
+## Running
 
 ```bash
-npm install
+make dev          # client + server together (recommended)
+make client-dev   # React dev server only  (port 3000)
+make server-dev   # Express server only    (port 3001)
 ```
 
-Start the development server:
+The app will be available at `http://localhost:3000`.
 
-```bash
-npm start
-```
+---
 
-The application will be available at:
+## Configuration
 
-```text
-http://localhost:3000
-```
+Copy `.env.example` to `.env` (`make setup` does this automatically). Key flags:
+
+| Variable | Default | Description |
+|---|---|---|
+| `REQUIRE_AUTH` | `false` | Set `true` to require GitHub OAuth login before the editor loads |
+| `ENABLE_DB` | `false` | Set `true` to enable Neo4j usage tracking |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | — | Required when `REQUIRE_AUTH=true` |
+| `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` | — | Required when `ENABLE_DB=true` |
+
+By default, users go straight to the editor with no login required.
 
 ---
 
 ## Building
 
-Create an optimized production build:
-
 ```bash
-npm run build
+npm run build           # production React bundle → build/
+make docker-build       # Docker image tagged with git SHA
+make docker-run         # run image locally, loading .env
 ```
-
-The compiled application will be generated in the `build/` directory.
 
 ---
 
@@ -106,23 +121,12 @@ Before submitting a pull request, please ensure that:
 
 ## Development
 
-This project is built with:
-
-* React
-* Node.js
-* npm
-
-Useful commands:
+Built with React 18, Express, Paper.js, and OpenSCAD (via shell exec for STL generation).
 
 ```bash
-# Start development server
-npm start
-
-# Run tests
-npm test
-
-# Create production build
-npm run build
+make setup        # first-time install
+make dev          # run everything
+npm test          # React test suite
 ```
 
 ---

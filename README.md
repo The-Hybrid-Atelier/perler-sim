@@ -31,7 +31,7 @@ Developed by [**The Hybrid Atelier**](https://hybridatelier.uta.edu/) in the Dep
 Clone the repository:
 
 ```bash
-git clone https://github.com/<YOUR_ORG>/perler-sim.git
+git clone https://github.com/The-Hybrid-Atelier/perler-sim.git
 cd perler-sim
 ```
 
@@ -85,7 +85,7 @@ Beadle was developed as part of ongoing research into computational fabrication,
 If you use Beadle in academic work, please cite the accompanying publication.
 
 ```bibtex
-% Citation will be added after publication.
+% Citation forthcoming — publication in preparation.
 ```
 
 ---

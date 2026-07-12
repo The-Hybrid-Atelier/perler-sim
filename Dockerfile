@@ -1,29 +1,23 @@
-FROM node:18-bullseye
+# Stage 1: build React frontend
+FROM node:18-bullseye AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
+# Stage 2: production runtime (no dev deps)
+FROM node:18-bullseye-slim
 ENV QT_QPA_PLATFORM=offscreen
-
-# Install OpenSCAD and dependencies
 RUN apt-get update && apt-get install -y \
     openscad \
     libgl1-mesa-glx \
     libxrender1 \
     && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
 WORKDIR /app
-
-# Copy package files and install dependencies
 COPY package*.json ./
-RUN npm install
-
-# Copy the rest of the files
-COPY . .
-
-# Build React frontend
-RUN npm run build
-
-# Expose the backend port
+RUN npm ci --omit=dev
+COPY server.js ./
+COPY --from=builder /app/build ./build
 EXPOSE 3001
-
-# Start the Express server
 CMD ["node", "server.js"]

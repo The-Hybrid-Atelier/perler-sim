@@ -341,21 +341,19 @@ function App() {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    fetch(`${apiBase}/api/auth/session`, {
-      credentials: 'include',
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('No active session');
+    fetch(`${apiBase}/api/auth/session`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated) {
+          setCurrentUser(data.user);
+          setAuthStatus('authenticated');
+        } else if (!data.authRequired) {
+          setAuthStatus('guest');
+        } else {
+          setAuthStatus('anonymous');
         }
-        return response.json();
-      })
-      .then(session => {
-        setCurrentUser(session.user);
-        setAuthStatus('authenticated');
       })
       .catch(() => {
-        setCurrentUser(null);
         setAuthStatus('anonymous');
       });
   }, [apiBase]);
@@ -386,6 +384,7 @@ function App() {
   };
 
   const isAuthenticated = authStatus === 'authenticated';
+  const canUseEditor = isAuthenticated || authStatus === 'guest';
 
   return (
     <div className="App">
@@ -393,9 +392,11 @@ function App() {
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <h1 className="visually-hidden">Beadle</h1>
       </header>
-      {isAuthenticated &&
+      {canUseEditor &&
         <aside className="controls fh" aria-label="Design controls">
-          <UserSession user={currentUser} onLogout={logout} onOpenDashboard={openDashboard} />
+          {isAuthenticated &&
+            <UserSession user={currentUser} onLogout={logout} onOpenDashboard={openDashboard} />
+          }
           {appScreen === START_SCREEN &&
             <Menus
                 paper={paperReady}
@@ -403,7 +404,7 @@ function App() {
                 setBeadParameters={setBeadParameters}
                 selectedColor={selectedColor}
                 setSelectedColor={setSelectedColor}
-                gridVisible={gridVisible}  
+                gridVisible={gridVisible}
                 setGridVisible={setGridVisible}
               />
           }
@@ -420,15 +421,15 @@ function App() {
       {isAuthenticated && currentUser?.isAdmin && appScreen === "dashboard" &&
           <AdminDashboard apiBase={apiBase} currentUser={currentUser} onBack={backToEditor} />
       }
-      {isAuthenticated && appScreen === START_SCREEN &&
+      {canUseEditor && appScreen === START_SCREEN &&
           <main id="main-content" className="fw fh" tabIndex="-1">
             <View icon="" goToScreen="" screen={appScreen} setScreen={setScreen}>
-              
+
               <DirectManipulation
                 paperReady={paperReady}
                 selectedColor={selectedColor}
                 beadParametersMM={beadParameters}
-                gridVisible={gridVisible}  
+                gridVisible={gridVisible}
               />
 
               <PaperCanvas setPaperReady={setPaperReady}></PaperCanvas>

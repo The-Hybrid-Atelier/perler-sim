@@ -86,7 +86,7 @@ const createGrid = (paper, beadParameters, savedBeads) => {
       const cellCenterX = startPointX + (i * cellSize) + (cellSize / 2);
       const cellCenterY = startPointY + (j * cellSize) + (cellSize / 2);
       const bead = createPerlerBead(paper, new paper.Point(cellCenterX, cellCenterY), beadParameters);
-      bead.visible = true;
+      bead.visible = i === 0 || i === numCells - 1 || j === 0 || j === numCells - 1;
       bead.name = 'bead';
       bead.data.gridKey = `square:${i}:${j}`;
       restoreBeadProgress(bead, savedBeads);

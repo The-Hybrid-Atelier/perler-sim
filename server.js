@@ -45,6 +45,8 @@ const PORT = process.env.PORT || 3001;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`;
 const GITHUB_ORG = process.env.GITHUB_ADMIN_ORG || 'The-Hybrid-Atelier';
+const REQUIRE_AUTH = process.env.REQUIRE_AUTH === 'true';
+const ENABLE_DB = process.env.ENABLE_DB === 'true';
 const APP_NAME = process.env.APP_NAME || 'perler-sim';
 const SESSION_COOKIE = 'perler_session';
 const STATE_COOKIE = 'github_oauth_state';
@@ -56,7 +58,7 @@ const neo4jConfig = {
   password: process.env.NEO4J_PASSWORD,
   database: process.env.NEO4J_DATABASE || 'neo4j',
 };
-const neo4jDriver = neo4jConfig.uri && neo4jConfig.user && neo4jConfig.password
+const neo4jDriver = ENABLE_DB && neo4jConfig.uri && neo4jConfig.user && neo4jConfig.password
   ? neo4j.driver(neo4jConfig.uri, neo4j.auth.basic(neo4jConfig.user, neo4jConfig.password))
   : null;
 
@@ -610,7 +612,7 @@ app.get('/api/auth/session', (req, res) => {
   const session = getSession(req);
 
   if (!session) {
-    return res.status(401).json({ authenticated: false });
+    return res.status(401).json({ authenticated: false, authRequired: REQUIRE_AUTH });
   }
 
   touchSession(session);

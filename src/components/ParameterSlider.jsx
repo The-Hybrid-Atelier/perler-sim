@@ -6,25 +6,26 @@ function titleToHyphenated(title) {
   return title.toLowerCase().replace(/\s+/g, '-');
 }
 
-const LabeledParameter = ({label, children}) => {
+const LabeledParameter = ({label, hotkey, children}) => {
   const id = titleToHyphenated(label);
   const childWithId = React.isValidElement(children)
     ? React.cloneElement(children, { id })
     : children;
   return (
     <div className="crsb fw parameter">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>{label}{hotkey && <span className="color-key" style={{marginLeft: '0.35em'}}>{hotkey}</span>}</label>
       {childWithId}
     </div>
   )
 }
 
-const ParameterSlider = ({ label, value, setValue, minValue, maxValue, stepValue, parser=parseFloat}) => {
-  
+const ParameterSlider = ({ id, label, value, setValue, minValue, maxValue, stepValue, parser=parseFloat}) => {
+
   const handleChange = (e) => {setValue(parser(e.target.value));};
 
   return (
       <input
+        id={id}
         type="range"
         value={value}
         min={minValue} // Adjust min and max values as needed

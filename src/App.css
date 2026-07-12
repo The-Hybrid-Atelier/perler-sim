@@ -106,6 +106,25 @@ html, body, #root, .App{
   padding: 0.6em 1em;
 }
 
+/* AAA contrast: #5c0909 on #fff6f6 = ~13:1; #7f0d0d on white = ~10.5:1; #1a1a1a on #e0e1e2 = ~9.7:1 */
+.ui.modal .ui.error.message,
+.ui.dimmer .ui.error.message {
+  color: #5c0909;
+}
+
+.controls .restart-button.ui.button {
+  background: #dc2626;
+  color: #fff;
+}
+.controls .restart-button.ui.button:hover,
+.controls .restart-button.ui.button:focus {
+  background: #b91c1c;
+  color: #fff;
+}
+.controls .ui.buttons .ui.button:not(.primary):not(.secondary):not(.red):not(.green):not(.blue) {
+  color: #1a1a1a;
+}
+
 .submenu-content .ui.button:not(.ui.buttons .ui.button) {
   margin: 6px;
 }
@@ -118,7 +137,8 @@ html, body, #root, .App{
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
+  min-height: 44px;
+  padding: 0 1rem;
   background: #24292f;
   color: #fff;
   border-radius: 6px;

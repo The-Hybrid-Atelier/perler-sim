@@ -19,6 +19,12 @@ function PaperCanvas({ setPaperReady, children}) {
       event.preventDefault();
     };
 
+    const onWheel = (event) => {
+      event.preventDefault();
+      const factor = event.deltaY < 0 ? 1.1 : 0.9;
+      paper.view.zoom *= factor;
+    };
+
     // Initial resize
     resizeCanvas();
 
@@ -27,6 +33,7 @@ function PaperCanvas({ setPaperReady, children}) {
 
     // Prevent context menu
     canvas.addEventListener("contextmenu", preventContextMenu);
+    canvas.addEventListener("wheel", onWheel, { passive: false });
 
     // Setup Paper.js
     
@@ -43,6 +50,7 @@ function PaperCanvas({ setPaperReady, children}) {
 
     return () => {
       canvas.removeEventListener("contextmenu", preventContextMenu);
+      canvas.removeEventListener("wheel", onWheel);
       window.removeEventListener('resize', resizeCanvas);
       setPaperReady(false);
     };

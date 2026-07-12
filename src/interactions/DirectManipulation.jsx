@@ -43,14 +43,14 @@ const setGridLineVisibility = (paper, gridVisible) => {
   });
 };
 
-const createGrid = (paper, beadParameters, savedBeads) => {  
+const createGrid = (paper, beadParameters, savedBeads, center) => {
   const numCells = beadParameters.gridSize;
   const beadSpacing = beadParameters.beadSpacing;
   const cellSize = beadParameters.outer_radius * 2 + beadSpacing;
   const gridSize = cellSize * numCells;
 
-  const centerX = paper.view.center.x;
-  const centerY = paper.view.center.y;
+  const centerX = center ? center.x : paper.view.center.x;
+  const centerY = center ? center.y : paper.view.center.y;
   const startPointX = centerX - (gridSize / 2);
   const startPointY = centerY - (gridSize / 2);
   const startPoint = new paper.Point(startPointX, startPointY);
@@ -94,14 +94,14 @@ const createGrid = (paper, beadParameters, savedBeads) => {
   }
 };
 
-const createCircularGrid = (paper, beadParameters, savedBeads) => {
+const createCircularGrid = (paper, beadParameters, savedBeads, center) => {
   const numCells = beadParameters.gridSize;
   const beadSpacing = beadParameters.beadSpacing;
   const cellSize = beadParameters.outer_radius * 2 + beadSpacing;
   const gridSize = cellSize * numCells;
 
-  const centerX = paper.view.center.x;
-  const centerY = paper.view.center.y;
+  const centerX = center ? center.x : paper.view.center.x;
+  const centerY = center ? center.y : paper.view.center.y;
   const centerPoint = new paper.Point(centerX, centerY);
 
   for (let radius = cellSize, ringIndex = 1; radius < gridSize; radius += cellSize, ringIndex++) {
@@ -137,14 +137,14 @@ const createCircularGrid = (paper, beadParameters, savedBeads) => {
 };
 
 
-const createHexagonalGrid = (paper, beadParameters, savedBeads) => {
+const createHexagonalGrid = (paper, beadParameters, savedBeads, center) => {
   const numCells = beadParameters.gridSize;
   const beadSpacing = beadParameters.beadSpacing;
   const cellSize = beadParameters.outer_radius * 2 + beadSpacing;
   const gridSize = cellSize * numCells;
 
-  const centerX = paper.view.center.x;
-  const centerY = paper.view.center.y;
+  const centerX = center ? center.x : paper.view.center.x;
+  const centerY = center ? center.y : paper.view.center.y;
   const hexRadius = gridSize / 2;
 
   const isPointInHexagon = (point, radius) => {
@@ -201,6 +201,7 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
   const savedBeads = useRef(new Map());
   const gridVisibleRef = useRef(gridVisible);
   const activePaperRef = useRef(null);
+  const gridCenterRef = useRef(null);
   const {
     outer_radius,
     inner_radius,
@@ -227,7 +228,12 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
       paper.project.clear();
       if (isNewPaper) {
         paper.view.zoom = 10;
+        gridCenterRef.current = null;
       }
+      if (!gridCenterRef.current) {
+        gridCenterRef.current = { x: paper.view.center.x, y: paper.view.center.y };
+      }
+      const gridCenter = gridCenterRef.current;
 
       const beadParameters = convertBeadParameters({
         outer_radius,
@@ -245,16 +251,16 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
 
       switch (createGridType) {
         case 'circular':
-          createCircularGrid(paper, beadParameters, savedBeads);
+          createCircularGrid(paper, beadParameters, savedBeads, gridCenter);
           break;
         case 'hexagonal':
-          createHexagonalGrid(paper, beadParameters, savedBeads);
+          createHexagonalGrid(paper, beadParameters, savedBeads, gridCenter);
           break;
         case 'grid':
-          createGrid(paper, beadParameters, savedBeads);
+          createGrid(paper, beadParameters, savedBeads, gridCenter);
           break;
         default:
-          createGrid(paper, beadParameters, savedBeads);
+          createGrid(paper, beadParameters, savedBeads, gridCenter);
           break;
       }
       setGridLineVisibility(paper, gridVisibleRef.current);

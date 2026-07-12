@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 // STYLE LIBRARIES
 import { Button, ButtonGroup, Label, Input} from 'semantic-ui-react';
 import { FaRegSquare, FaRegCircle } from "react-icons/fa"; 
@@ -49,8 +49,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
     const setThickness = (value)=>setBeadParameters({...beadParameters, thickness: value, inner_radius: beadParameters.outer_radius - value});
     const setBeadHeight = (value) => setBeadParameters({...beadParameters, beadHeight: value});
     const [currentTool, setCurrentTool] = useState('beadTool');
-    const [projectName, setProjectName] = useState('MyBeadProject');
-    const [version, setVersion] = useState("1");
+    const spaceRestoreTool = useRef('beadTool');
     const gridVisibilityValue = Number(gridVisible);
     const isGridVisible = gridVisibilityValue > 0;
 
@@ -74,16 +73,21 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
     }, [paper, currentTool]);
 
     useEffect(() => {
-      const onKey = (e) => {
+      const onKeyDown = (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         if (e.key === 'm' || e.key === 'M') setCurrentTool('fillTool');
         if (e.key === 'b' || e.key === 'B') setCurrentTool('brushTool');
         if (e.key === 'p' || e.key === 'P') setCurrentTool('beadTool');
+        if (e.key === ' ' && !e.repeat) setCurrentTool(prev => { spaceRestoreTool.current = prev; return 'panTool'; });
         const n = parseInt(e.key);
         if (n >= 1 && n <= BEAD_COLORS.length) setSelectedColor(BEAD_COLORS[n - 1]);
       };
-      window.addEventListener('keydown', onKey);
-      return () => window.removeEventListener('keydown', onKey);
+      const onKeyUp = (e) => {
+        if (e.key === ' ') setCurrentTool(spaceRestoreTool.current);
+      };
+      window.addEventListener('keydown', onKeyDown);
+      window.addEventListener('keyup', onKeyUp);
+      return () => { window.removeEventListener('keydown', onKeyDown); window.removeEventListener('keyup', onKeyUp); };
     }, []);
 
     return (
@@ -91,29 +95,23 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
          
         {/* TOOLS */}
         <ToolBarSubMenu id="Tools" name='Tools'>
-          <LabeledParameter label='Project Name'>
-            <Input id="project-name" type="text" value={projectName} onChange={(e)=>setProjectName(e.target.value)}/>
-          </LabeledParameter>
-          <LabeledParameter label='Version'>
-            <Input id="version" type="number" value={version} onChange={(e)=>setVersion(e.target.value)}/>
-          </LabeledParameter>
           <LabeledParameter label='Controls'>
-          <PaperControls projectName={projectName} version={version} selectedColor={selectedColor} beadParameters={beadParameters} />
+            <PaperControls selectedColor={selectedColor} beadParameters={beadParameters} />
           </LabeledParameter>
           <LabeledParameter label='Zoom'>
             <ZoomControls />
           </LabeledParameter>
-          <LabeledParameter label='MarqueePlace (M)'>
+          <LabeledParameter label='MarqueePlace' hotkey='M'>
             <Button aria-label='Marquee Place' color={currentTool === "fillTool" ? "green" : ""} icon onClick={() => setCurrentTool("fillTool")}><LuPaintBucket /></Button>
           </LabeledParameter>
-          <LabeledParameter label='BrushPlace (B)'>
+          <LabeledParameter label='BrushPlace' hotkey='B'>
             <Button aria-label='Brush Place' color={currentTool === "brushTool" ? "green" : ""} icon onClick={() => setCurrentTool("brushTool")}><IoBrushOutline /></Button>
           </LabeledParameter>
-          <LabeledParameter label='BeadPlace (P)'>
+          <LabeledParameter label='BeadPlace' hotkey='P'>
             <Button aria-label='Bead Place' color={currentTool === "beadTool" ? "green" : ""} icon onClick={() => setCurrentTool("beadTool")}><PiCylinderFill /></Button>
           </LabeledParameter>
-          <LabeledParameter label='Pan'>
-            <Button aria-label='Pan' color={currentTool === "panTool" ? "green" : ""} icon onClick={() => setCurrentTool("panTool")}><IoMoveSharp /> </Button>
+          <LabeledParameter label='Pan' hotkey='Space'>
+            <Button aria-label='Pan' color={currentTool === "panTool" ? "green" : ""} icon onClick={() => setCurrentTool("panTool")}><IoMoveSharp /></Button>
           </LabeledParameter>
         </ToolBarSubMenu>
 

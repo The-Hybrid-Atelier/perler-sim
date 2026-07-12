@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Button, Modal, ButtonGroup } from 'semantic-ui-react';
+import { Icon, Button, Modal, Dropdown } from 'semantic-ui-react';
 import paper from 'paper';
 import axios from 'axios';
 import FileSaver from 'file-saver';
@@ -121,16 +121,12 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
         content='This action cannot be undone.'
         actions={['Keep It', { key: 'done', content: 'Nuke It', positive: true, onClick: trashInteraction }]}
       />
-      <ButtonGroup>
-        <Button icon onClick={()=>handleExportSTL(selectedColor)}>
-          <Icon name='download' />
-          STL
-        </Button>
-        <Button icon onClick={()=>handleExportSVG(selectedColor)}>
-          <Icon name='download' />
-          SVG
-        </Button>
-      </ButtonGroup>
+      <Dropdown text='Export' icon='download' floating labeled button className='icon'>
+        <Dropdown.Menu>
+          <Dropdown.Item icon='cube' text='STL' onClick={() => handleExportSTL(selectedColor)} />
+          <Dropdown.Item icon='file outline' text='SVG' onClick={() => handleExportSVG(selectedColor)} />
+        </Dropdown.Menu>
+      </Dropdown>
     </div>
   );
 };

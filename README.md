@@ -63,9 +63,10 @@ Copy `.env.example` to `.env` (`make setup` does this automatically). Key flags:
 
 | Variable | Default | Description |
 |---|---|---|
-| `REQUIRE_AUTH` | `false` | Set `true` to require GitHub OAuth login before the editor loads |
+| `REACT_APP_REQUIRE_AUTH` | `false` | Client-side gate: set `true` to show the GitHub login screen |
+| `REQUIRE_AUTH` | `false` | Server-side enforcement: set `true` to reject unauthenticated API calls |
 | `ENABLE_DB` | `false` | Set `true` to enable Neo4j usage tracking |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | — | Required when `REQUIRE_AUTH=true` |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | — | Required when auth is enabled |
 | `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` | — | Required when `ENABLE_DB=true` |
 
 By default, users go straight to the editor with no login required.

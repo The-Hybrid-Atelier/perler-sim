@@ -100,22 +100,36 @@ html, body, #root, .App{
   padding: 0;
 }
 
-.submenu-content .ui.button:not(.ui.buttons .ui.button) {
-  margin: 6px;
-}
-
+.controls .ui.buttons .ui.button,
+.submenu-content .ui.button:not(.ui.buttons .ui.button),
 .parameter .ui.button {
   padding: 0.6em 1em;
 }
 
-.controls .ui.red.button.restart-button {
-  background-color: #9f1111;
-  color: #fff;
+.submenu-content .ui.button:not(.ui.buttons .ui.button) {
+  margin: 6px;
 }
 
-.controls .ui.red.button.restart-button:hover,
-.controls .ui.red.button.restart-button:focus {
-  background-color: #7f0d0d;
+.github-banner {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  background: #24292f;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.github-banner:hover {
+  background: #32383f;
   color: #fff;
 }
 

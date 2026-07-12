@@ -116,7 +116,7 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
   return (
     <div>
       <Modal
-        trigger={<Button className='restart-button' color='red' icon><Icon name='trash' />Restart</Button>}
+        trigger={<Button color='red' icon><Icon name='trash' />Restart</Button>}
         header='Are you sure you want to destroy your masterpiece?'
         content='This action cannot be undone.'
         actions={['Keep It', { key: 'done', content: 'Nuke It', positive: true, onClick: trashInteraction }]}

@@ -121,7 +121,7 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
         content='This action cannot be undone.'
         actions={['Keep It', { key: 'done', content: 'Nuke It', positive: true, onClick: trashInteraction }]}
       />
-      <Dropdown text='Export' icon='download' floating labeled button className='icon'>
+      <Dropdown text='Export' icon='download' button className='icon'>
         <Dropdown.Menu>
           <Dropdown.Item icon='cube' text='STL' onClick={() => handleExportSTL(selectedColor)} />
           <Dropdown.Item icon='file outline' text='SVG' onClick={() => handleExportSVG(selectedColor)} />

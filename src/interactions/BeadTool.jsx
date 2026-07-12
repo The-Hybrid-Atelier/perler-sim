@@ -22,7 +22,6 @@ const beadTool = (selectedColor) => {
         color: selectedColor,
         activeBead: null,
         setColor: function (color) {
-            console.log('UPDATING COLOR', new paper.Color(color).toCSS(true));
             this.color = color;
         },
         onMouseDown: function(event) {

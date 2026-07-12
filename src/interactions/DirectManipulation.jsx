@@ -56,7 +56,6 @@ const createGrid = (paper, beadParameters, savedBeads) => {
   const startPoint = new paper.Point(startPointX, startPointY);
 
   for (let i = 0; i <= numCells; i++) {
-    console.log(". VERTICAL LINE", i);
     const y = startPoint.y + i * cellSize;
     const start = new paper.Point(startPoint.x, y);
     const end = new paper.Point(startPoint.x + gridSize, y);
@@ -221,7 +220,6 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
 
   useEffect(() => {
     if (paperReady && gridSize) {
-      console.log("Loading FuseBlock")
       const paper = paperReady;
       const isNewPaper = activePaperRef.current !== paper;
       activePaperRef.current = paper;
@@ -253,11 +251,9 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
           createHexagonalGrid(paper, beadParameters, savedBeads);
           break;
         case 'grid':
-          console.log("GRID", beadParameters);
           createGrid(paper, beadParameters, savedBeads);
           break;
         default:
-          console.log("DEFAULT", beadParameters);
           createGrid(paper, beadParameters, savedBeads);
           break;
       }

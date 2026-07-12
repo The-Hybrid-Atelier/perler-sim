@@ -21,7 +21,6 @@ function setupPaper(canvasRef) {
 
 // Translate to readable color name
 const getColorName = (color) => {
-  console.log("Color received:", color);
   const colorNames = {
     "black": "Black",
     "red": "Red",    
@@ -40,7 +39,6 @@ const getColorName = (color) => {
 
 function exportSVG() {
   let prev = paper.view.zoom;
-  console.log("Exporting file as SVG");
   paper.view.zoom = 1;
   paper.view.update();
 

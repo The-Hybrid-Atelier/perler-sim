@@ -13,7 +13,6 @@ function PaperCanvas({ setPaperReady, children}) {
       // Set canvas dimensions
       canvas.width = canvas.clientWidth;
       canvas.height = canvas.clientHeight;
-      console.log(`Canvas resized: ${canvas.width}x${canvas.height}`);
     };
 
     const preventContextMenu = (event) => {

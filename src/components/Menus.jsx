@@ -23,20 +23,20 @@ import { useEffect } from 'react';
 
 
 const ColorPicker = ({ selectedColor, setSelectedColor }) => {
-    const colors = BEAD_COLORS;
-  
     return (
       <div className='fwh cr'>
-        {colors.map(color => (
-          <button
-            key={color}
-            className={`bead ${selectedColor === color ? "active" : ""}`}
-            style={{ backgroundColor: color}}
-            onClick={() => setSelectedColor(color)}
-            aria-label={`Select ${color} color`}
-          >
-            <div className='hole'></div>
-          </button>
+        {BEAD_COLORS.map((color, i) => (
+          <div key={color} className='color-swatch'>
+            <button
+              className={`bead ${selectedColor === color ? "active" : ""}`}
+              style={{ backgroundColor: color }}
+              onClick={() => setSelectedColor(color)}
+              aria-label={`Select color ${i + 1}`}
+            >
+              <div className='hole'></div>
+            </button>
+            <span className='color-key'>{i + 1}</span>
+          </div>
         ))}
       </div>
     );
@@ -73,6 +73,19 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
       }
     }, [paper, currentTool]);
 
+    useEffect(() => {
+      const onKey = (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key === 'm' || e.key === 'M') setCurrentTool('fillTool');
+        if (e.key === 'b' || e.key === 'B') setCurrentTool('brushTool');
+        if (e.key === 'p' || e.key === 'P') setCurrentTool('beadTool');
+        const n = parseInt(e.key);
+        if (n >= 1 && n <= BEAD_COLORS.length) setSelectedColor(BEAD_COLORS[n - 1]);
+      };
+      window.addEventListener('keydown', onKey);
+      return () => window.removeEventListener('keydown', onKey);
+    }, []);
+
     return (
         <>
          
@@ -90,13 +103,13 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
           <LabeledParameter label='Zoom'>
             <ZoomControls />
           </LabeledParameter>
-          <LabeledParameter label='MarqueePlace'>
+          <LabeledParameter label='MarqueePlace (M)'>
             <Button aria-label='Marquee Place' color={currentTool === "fillTool" ? "green" : ""} icon onClick={() => setCurrentTool("fillTool")}><LuPaintBucket /></Button>
           </LabeledParameter>
-          <LabeledParameter label='BrushPlace'>
-            <Button aria-label='Bursh Place'color={currentTool === "brushTool" ? "green" : ""} icon onClick={() => setCurrentTool("brushTool")}><IoBrushOutline /></Button>
+          <LabeledParameter label='BrushPlace (B)'>
+            <Button aria-label='Brush Place' color={currentTool === "brushTool" ? "green" : ""} icon onClick={() => setCurrentTool("brushTool")}><IoBrushOutline /></Button>
           </LabeledParameter>
-          <LabeledParameter label='BeadPlace'>
+          <LabeledParameter label='BeadPlace (P)'>
             <Button aria-label='Bead Place' color={currentTool === "beadTool" ? "green" : ""} icon onClick={() => setCurrentTool("beadTool")}><PiCylinderFill /></Button>
           </LabeledParameter>
           <LabeledParameter label='Pan'>

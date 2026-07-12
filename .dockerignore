@@ -35,6 +35,15 @@ coverage/
 # Codespaces / Devcontainer
 .devcontainer/
 .vscode/
+.github/
+
+# Runtime upload scratch dir (not needed at build time)
+images/
+
+# Docs / tooling not needed in the image
+README.md
+Makefile
+LICENSE
 
 # Env and secret files
 .env

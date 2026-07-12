@@ -1,5 +1,5 @@
 // DirectManipulation.jsx
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Ruler from '../javascripts/ruler.js';
 
 
@@ -11,7 +11,39 @@ const convertBeadParameters = (parameters) => {
   };
 };
 
-const createGrid = (paper, beadParameters) => {  
+const getBeadState = (bead) => ({
+  visible: bead.visible,
+  fillColor: bead.fillColor ? bead.fillColor.toCSS(true) : bead.fillColor,
+});
+
+const saveBeadProgress = (paper, savedBeads) => {
+  paper.project.getItems({ name: 'bead' }).forEach(bead => {
+    if (bead.data?.gridKey) {
+      savedBeads.current.set(bead.data.gridKey, getBeadState(bead));
+    }
+  });
+};
+
+const restoreBeadProgress = (bead, savedBeads) => {
+  const savedState = savedBeads?.current?.get(bead.data?.gridKey);
+
+  if (!savedState) {
+    return;
+  }
+
+  bead.visible = savedState.visible;
+  if (savedState.fillColor) {
+    bead.fillColor = savedState.fillColor;
+  }
+};
+
+const setGridLineVisibility = (paper, gridVisible) => {
+  paper.project.getItems({ name: 'gridLine' }).forEach(gridLine => {
+    gridLine.opacity = gridVisible;
+  });
+};
+
+const createGrid = (paper, beadParameters, savedBeads) => {  
   const numCells = beadParameters.gridSize;
   const beadSpacing = beadParameters.beadSpacing;
   const cellSize = beadParameters.outer_radius * 2 + beadSpacing;
@@ -56,11 +88,13 @@ const createGrid = (paper, beadParameters) => {
       const bead = createPerlerBead(paper, new paper.Point(cellCenterX, cellCenterY), beadParameters);
       bead.visible = true;
       bead.name = 'bead';
+      bead.data.gridKey = `square:${i}:${j}`;
+      restoreBeadProgress(bead, savedBeads);
     }
   }
 };
 
-const createCircularGrid = (paper, beadParameters) => {
+const createCircularGrid = (paper, beadParameters, savedBeads) => {
   const numCells = beadParameters.gridSize;
   const beadSpacing = beadParameters.beadSpacing;
   const cellSize = beadParameters.outer_radius * 2 + beadSpacing;
@@ -70,7 +104,7 @@ const createCircularGrid = (paper, beadParameters) => {
   const centerY = paper.view.center.y;
   const centerPoint = new paper.Point(centerX, centerY);
 
-  for (let radius = cellSize; radius < gridSize; radius += cellSize) {
+  for (let radius = cellSize, ringIndex = 1; radius < gridSize; radius += cellSize, ringIndex++) {
     const numBeads = Math.floor(2 * Math.PI * radius / cellSize);
     for (let i = 0; i < numBeads; i++) {
       const angle = (i * 360) / numBeads;
@@ -81,6 +115,8 @@ const createCircularGrid = (paper, beadParameters) => {
       const bead = createPerlerBead(paper, beadCenter, beadParameters);
       bead.visible = true;
       bead.name = 'bead';
+      bead.data.gridKey = `circular:${ringIndex}:${i}`;
+      restoreBeadProgress(bead, savedBeads);
     }
   }
   for (let radius = cellSize/2; radius < gridSize; radius += cellSize) {
@@ -96,10 +132,12 @@ const createCircularGrid = (paper, beadParameters) => {
   const centerBead = createPerlerBead(paper, centerPoint, beadParameters);
   centerBead.visible = true;
   centerBead.name = 'bead';
+  centerBead.data.gridKey = 'circular:center';
+  restoreBeadProgress(centerBead, savedBeads);
 };
 
 
-const createHexagonalGrid = (paper, beadParameters) => {
+const createHexagonalGrid = (paper, beadParameters, savedBeads) => {
   const numCells = beadParameters.gridSize;
   const beadSpacing = beadParameters.beadSpacing;
   const cellSize = beadParameters.outer_radius * 2 + beadSpacing;
@@ -129,6 +167,8 @@ const createHexagonalGrid = (paper, beadParameters) => {
         const bead = createPerlerBead(paper, point, beadParameters);
         bead.visible = true;
         bead.name = 'bead';
+        bead.data.gridKey = `hexagonal:${q}:${r}`;
+        restoreBeadProgress(bead, savedBeads);
       }
     }
   }
@@ -157,32 +197,81 @@ const createPerlerBead = (paper, point, beadParameters) => {
 };
 
 
-const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM, gridVisible }) => {
-  useEffect(() => {
-    if (paperReady && beadParametersMM) {
-      const paper = paperReady;
-      paper.project.clear();
-      paper.view.zoom = 10;
+const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM = {}, gridVisible }) => {
+  const savedBeads = useRef(new Map());
+  const gridVisibleRef = useRef(gridVisible);
+  const activePaperRef = useRef(null);
+  const {
+    outer_radius,
+    inner_radius,
+    gridSize,
+    beadSpacing,
+    createGridType: selectedGridType,
+    fillColor,
+    strokeColor,
+    strokeWidth,
+    selectionStrokeWidth,
+    thickness,
+  } = beadParametersMM;
 
-      const beadParameters = convertBeadParameters(beadParametersMM);
+  useEffect(() => {
+    gridVisibleRef.current = gridVisible;
+  }, [gridVisible]);
+
+  useEffect(() => {
+    if (paperReady && gridSize) {
+      const paper = paperReady;
+      const isNewPaper = activePaperRef.current !== paper;
+      activePaperRef.current = paper;
+      saveBeadProgress(paper, savedBeads);
+      paper.project.clear();
+      if (isNewPaper) {
+        paper.view.zoom = 10;
+      }
+
+      const beadParameters = convertBeadParameters({
+        outer_radius,
+        inner_radius,
+        gridSize,
+        beadSpacing,
+        createGridType: selectedGridType,
+        fillColor,
+        strokeColor,
+        strokeWidth,
+        selectionStrokeWidth,
+        thickness,
+      });
       const createGridType = beadParameters.createGridType;
 
       switch (createGridType) {
         case 'circular':
-          createCircularGrid(paper, beadParameters);
+          createCircularGrid(paper, beadParameters, savedBeads);
           break;
         case 'hexagonal':
-          createHexagonalGrid(paper, beadParameters);
+          createHexagonalGrid(paper, beadParameters, savedBeads);
           break;
         case 'grid':
-          createGrid(paper, beadParameters);
+          createGrid(paper, beadParameters, savedBeads);
           break;
         default:
-          createGrid(paper, beadParameters);
+          createGrid(paper, beadParameters, savedBeads);
           break;
       }
+      setGridLineVisibility(paper, gridVisibleRef.current);
     }
-  }, [paperReady, beadParametersMM]);
+  }, [
+    paperReady,
+    outer_radius,
+    inner_radius,
+    gridSize,
+    beadSpacing,
+    selectedGridType,
+    fillColor,
+    strokeColor,
+    strokeWidth,
+    selectionStrokeWidth,
+    thickness,
+  ]);
 
   
 
@@ -197,12 +286,7 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
 
   useEffect(() => {
     if (paperReady) {
-      const paper = paperReady;
-      paper.project.activeLayer.children.forEach(item => {
-        if (item.name === "gridLine") {
-          item.opacity = gridVisible;
-        }
-      });
+      setGridLineVisibility(paperReady, gridVisible);
     }
   }, [paperReady, gridVisible])
 
@@ -210,7 +294,3 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
 };
 
 export { DirectManipulation, createGrid, createCircularGrid, createHexagonalGrid };
-
-
-
-

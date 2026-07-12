@@ -9,6 +9,17 @@ const exportSVG = () => {
   return paper.project.exportSVG({ asString: true });
 };
 
+const trackSVGDownload = async (filename) => {
+  const apiBase = getApiBaseUrl();
+  try {
+    await axios.post(`${apiBase}/api/downloads/svg`, { filename }, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error('Error tracking SVG download:', error);
+  }
+};
+
 const PaperControls = ({  selectedColor, version, projectName, beadParameters }) => {
   const trashInteraction = () => {
     paper.project.clear();
@@ -53,6 +64,7 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
           const response = await axios.post(`${apiBase}/convert-svg-to-stl`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             responseType: 'blob',
+            withCredentials: true,
           });
         
           FileSaver.saveAs(response.data, filename);
@@ -68,7 +80,7 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
     paper.view.zoom = prevZoom;
 };
 
-  const handleExportSVG = (selectedColor) => {
+  const handleExportSVG = async (selectedColor) => {
     const prevZoom = paper.view.zoom;
     paper.view.zoom = 1;
     const colorIndex = BEAD_COLORS.findIndex(element => element === selectedColor);
@@ -91,6 +103,7 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
 
     const svgString = exportSVG();
     const blob = new Blob([svgString], { type: 'image/svg+xml' });
+    await trackSVGDownload(filename);
     FileSaver.saveAs(blob, filename);
 
     beadsToRemove.forEach(bead => paper.project.activeLayer.addChild(bead));
@@ -103,7 +116,7 @@ const PaperControls = ({  selectedColor, version, projectName, beadParameters })
   return (
     <div>
       <Modal
-        trigger={<Button color='red' icon><Icon name='trash' />Restart</Button>}
+        trigger={<Button className='restart-button' color='red' icon><Icon name='trash' />Restart</Button>}
         header='Are you sure you want to destroy your masterpiece?'
         content='This action cannot be undone.'
         actions={['Keep It', { key: 'done', content: 'Nuke It', positive: true, onClick: trashInteraction }]}

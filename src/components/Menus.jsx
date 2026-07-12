@@ -51,6 +51,8 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
     const [currentTool, setCurrentTool] = useState('beadTool');
     const [projectName, setProjectName] = useState('MyBeadProject');
     const [version, setVersion] = useState("1");
+    const gridVisibilityValue = Number(gridVisible);
+    const isGridVisible = gridVisibilityValue > 0;
 
     useEffect(() => { 
       if(paper){
@@ -105,7 +107,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
 
          
          {/* PEGBOARD */}
-         <ToolBarSubMenu id="PegboardControls" name='Pegboard' initVisible={true}>
+         <ToolBarSubMenu id="PegboardControls" name='Pegboard Controls' initVisible={false}>
  
             <LabeledParameter label='Size'>
                 <ParameterSlider 
@@ -136,14 +138,19 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
 
             <LabeledParameter label='Visibility'>
                 <ParameterSlider 
-                    value={gridVisible} 
+                    value={gridVisibilityValue} 
                     setValue={setGridVisible} 
                     minValue={0} 
                     maxValue={1}
                     stepValue={0.1}
                     label='Visibility'
                 />
-                <Button basic icon={`eye ${gridVisible ? "" : "slash"}`} onClick={()=>setGridVisible(!gridVisible)}/>
+                <Button
+                    aria-label={isGridVisible ? 'Hide grid' : 'Show grid'}
+                    basic
+                    icon={`eye ${isGridVisible ? "" : "slash"}`}
+                    onClick={()=>setGridVisible(isGridVisible ? 0 : 1)}
+                />
             </LabeledParameter>
 
             
@@ -161,7 +168,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
         
 
         {/* BEADS */}
-        <ToolBarSubMenu id="BeadControls" name='Beads'>
+        <ToolBarSubMenu id="BeadControls" name='Bead Controls' initVisible={false}>
             <LabeledParameter label='Thickness'>
 
             <ParameterSlider 

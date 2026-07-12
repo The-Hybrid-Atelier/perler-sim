@@ -10,13 +10,18 @@ const BEAD_COLORS_NAMES = ['black', 'green', 'yellow', 'orange', 'red'];
 
 function getApiBaseUrl() {
   const host = window.location.hostname;
+  const port = window.location.port;
 
   if (host.endsWith('.app.github.dev')) {
     return `https://${host.replace('-3000.', '-3001.')}`;
   }
 
-  if (host === 'localhost') {
-    return 'http://localhost:3001';
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return `http://${host}:3001`;
+  }
+
+  if (port === '3000') {
+    return `${window.location.protocol}//${host}:3001`;
   }
 
   // In production, assume same-origin

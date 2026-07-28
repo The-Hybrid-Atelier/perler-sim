@@ -39,50 +39,18 @@ docker-run:
 # Then: make provision  (idempotent — safe to re-run)
 
 provision:
-	az group create \
-		--name $(RESOURCE_GROUP) \
-		--location $(LOCATION) \
-		--output table
-	az acr create \
-		--name $(ACR_NAME) \
-		--resource-group $(RESOURCE_GROUP) \
-		--sku Basic \
-		--admin-enabled true \
-		--output table
-	az containerapp env create \
-		--name $(APP_ENV) \
-		--resource-group $(RESOURCE_GROUP) \
-		--location $(LOCATION)
-	@$(MAKE) --no-print-directory _push
-	@ACR_PASS=$$(az acr credential show --name $(ACR_NAME) \
-		--query "passwords[0].value" -o tsv) && \
-	az containerapp create \
-		--name $(APP_NAME) \
-		--resource-group $(RESOURCE_GROUP) \
-		--environment $(APP_ENV) \
-		--image $(IMAGE):$(TAG) \
-		--registry-server $(ACR_NAME).azurecr.io \
-		--registry-username $(ACR_NAME) \
-		--registry-password "$$ACR_PASS" \
-		--target-port 3001 \
-		--ingress external \
-		--cpu 1 --memory 2Gi \
-		--min-replicas 1
-	@echo ""
-	@echo "App URL:"
-	@az containerapp show \
-		--name $(APP_NAME) \
-		--resource-group $(RESOURCE_GROUP) \
-		--query properties.configuration.ingress.fqdn -o tsv | sed 's/^/  https:\/\//'
+	az group create --name $(RESOURCE_GROUP) --location $(LOCATION) --output table
+	az acr create --name $(ACR_NAME) --resource-group $(RESOURCE_GROUP) --sku Basic --admin-enabled true --output table
+	az containerapp env create --name $(APP_ENV) --resource-group $(RESOURCE_GROUP) --location $(LOCATION)
+	$(MAKE) --no-print-directory _push
+	az containerapp create --name $(APP_NAME) --resource-group $(RESOURCE_GROUP) --environment $(APP_ENV) --image $(IMAGE):$(TAG) --registry-server $(ACR_NAME).azurecr.io --registry-username $(ACR_NAME) --registry-password "$$(az acr credential show --name $(ACR_NAME) --query 'passwords[0].value' -o tsv)" --target-port 3001 --ingress external
+	@echo "" && echo "App URL:" && az containerapp show --name $(APP_NAME) --resource-group $(RESOURCE_GROUP) --query properties.configuration.ingress.fqdn -o tsv | sed 's/^/  https:\/\//'
 
 # ── Azure: deploy update ───────────────────────────────────────────────────────
 
 deploy:
-	@$(MAKE) --no-print-directory _push
-	az containerapp update \
-		--name $(APP_NAME) \
-		--resource-group $(RESOURCE_GROUP) \
-		--image $(IMAGE):$(TAG)
+	$(MAKE) --no-print-directory _push
+	az containerapp update --name $(APP_NAME) --resource-group $(RESOURCE_GROUP) --image $(IMAGE):$(TAG)
 	@echo "Deployed $(TAG)"
 
 # ── Internal: build + push to ACR ─────────────────────────────────────────────

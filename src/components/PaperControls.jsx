@@ -25,7 +25,7 @@ const trackSVGDownload = async (filename) => {
   }
 };
 
-const PaperControls = ({ selectedColor, beadParameters }) => {
+const PaperControls = ({ selectedColor, beadParameters, onClearDesign }) => {
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [exportStatus, setExportStatus] = useState(null);
   const [exportFormat, setExportFormat] = useState('svg');
@@ -45,8 +45,6 @@ const PaperControls = ({ selectedColor, beadParameters }) => {
   useEffect(() => {
     localStorage.setItem(STORAGE.labels, JSON.stringify(colorConfig.map(c => c.name)));
   }, [colorConfig]);
-
-  const trashInteraction = () => { paper.project.clear(); };
 
   const updateConfig = (i, patch) =>
     setColorConfig(prev => prev.map((cfg, j) => j === i ? { ...cfg, ...patch } : cfg));
@@ -133,7 +131,7 @@ const PaperControls = ({ selectedColor, beadParameters }) => {
         trigger={<Button className='restart-button' icon><Icon name='trash' />Restart</Button>}
         header='Are you sure you want to destroy your masterpiece?'
         content='This action cannot be undone.'
-        actions={['Keep It', { key: 'done', content: 'Nuke It', positive: true, onClick: trashInteraction }]}
+        actions={['Keep It', { key: 'done', content: 'Nuke It', positive: true, onClick: onClearDesign }]}
       />
       <Button icon onClick={() => { setExportStatus(null); setExportModalOpen(true); }} disabled={exporting}>
         <Icon name='download' />Export

@@ -197,11 +197,13 @@ const createPerlerBead = (paper, point, beadParameters) => {
 };
 
 
-const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM = {}, gridVisible }) => {
+const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM = {}, gridVisible, resetVersion = 0 }) => {
   const savedBeads = useRef(new Map());
   const gridVisibleRef = useRef(gridVisible);
   const activePaperRef = useRef(null);
   const gridCenterRef = useRef(null);
+  const initialCenterRef = useRef(null);
+  const lastResetVersion = useRef(resetVersion);
   const {
     outer_radius,
     inner_radius,
@@ -224,10 +226,23 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
       const paper = paperReady;
       const isNewPaper = activePaperRef.current !== paper;
       activePaperRef.current = paper;
-      saveBeadProgress(paper, savedBeads);
+      const isReset = lastResetVersion.current !== resetVersion;
+      lastResetVersion.current = resetVersion;
+      if (isReset) {
+        // Discard edits instead of saving them for the next grid rebuild.
+        savedBeads.current.clear();
+        paper.tools.forEach(tool => tool.reset?.());
+      } else {
+        saveBeadProgress(paper, savedBeads);
+      }
       paper.project.clear();
-      if (isNewPaper) {
+      if (isNewPaper || isReset) {
         paper.view.zoom = 10;
+        if (isNewPaper) {
+          initialCenterRef.current = { x: paper.view.center.x, y: paper.view.center.y };
+        } else {
+          paper.view.center = new paper.Point(initialCenterRef.current);
+        }
         gridCenterRef.current = null;
       }
       if (!gridCenterRef.current) {
@@ -266,6 +281,7 @@ const DirectManipulation = ({ paper, paperReady, selectedColor, beadParametersMM
       setGridLineVisibility(paper, gridVisibleRef.current);
     }
   }, [
+    resetVersion,
     paperReady,
     outer_radius,
     inner_radius,

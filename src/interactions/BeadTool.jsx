@@ -21,6 +21,9 @@ const beadTool = (selectedColor, isEraseActive = (event) => event.modifiers.shif
         name: 'beadTool',
         color: selectedColor,
         activeBead: null,
+        reset: function () {
+            this.activeBead = null;
+        },
         setColor: function (color) {
             this.color = color;
         },

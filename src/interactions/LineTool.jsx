@@ -4,6 +4,10 @@ const lineTool = (selectedColor, isEraseActive = (event) => event.modifiers.shif
     return new paper.Tool({
         name: 'brushTool',
         color: selectedColor,
+        reset: function () {
+            if (this.path) this.path.remove();
+            this.path = null;
+        },
         setColor: function (color) {
             this.color = color;
         },
@@ -35,10 +39,7 @@ const lineTool = (selectedColor, isEraseActive = (event) => event.modifiers.shif
             });
         },
         onMouseUp: function(event){
-            if(this.path){
-                this.path.remove();
-                this.path = null;
-            }
+            this.reset();
         }
     });
 };

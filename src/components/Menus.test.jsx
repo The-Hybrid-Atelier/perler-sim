@@ -21,7 +21,9 @@ jest.mock('paper', () => {
   };
 });
 jest.mock('react-draggable', () => ({ children }) => <>{children}</>);
-jest.mock('./PaperControls.jsx', () => ({ PaperControls: () => null }));
+jest.mock('./PaperControls.jsx', () => ({
+  PaperControls: ({ onClearDesign }) => <button onClick={onClearDesign}>Clear Design</button>,
+}));
 jest.mock('./ZoomControls.jsx', () => ({ ZoomControls: () => null }));
 
 const shiftDown = (options = {}) => fireEvent.keyDown(window, { key: 'Shift', code: 'ShiftLeft', ...options });
@@ -38,12 +40,12 @@ beforeEach(() => {
   paper.project.getItems.mockReset();
 });
 
-function renderMenus() {
+function renderMenus(onClearDesign = jest.fn()) {
   const setSelectedColor = jest.fn();
   render(<Menus paper={paper} beadParameters={{ gridSize: 5, beadSpacing: 0.5,
     thickness: 0.79, outer_radius: 2.25, beadHeight: 5.2, createGridType: 'square' }}
     setBeadParameters={jest.fn()} selectedColor='red' setSelectedColor={setSelectedColor}
-    gridVisible={true} setGridVisible={jest.fn()} />);
+    gridVisible={true} setGridVisible={jest.fn()} onClearDesign={onClearDesign} />);
   return { setSelectedColor };
 }
 
@@ -161,4 +163,11 @@ test('preserves tool and color shortcuts with erase enabled', () => {
   fireEvent.keyDown(window, { key: '1' });
   expect(setSelectedColor).toHaveBeenCalledTimes(1);
   expectErase(true);
+});
+
+test('passes the workspace reset callback to the controls', () => {
+  const onClearDesign = jest.fn();
+  renderMenus(onClearDesign);
+  fireEvent.click(screen.getByRole('button', { name: 'Clear Design' }));
+  expect(onClearDesign).toHaveBeenCalledTimes(1);
 });

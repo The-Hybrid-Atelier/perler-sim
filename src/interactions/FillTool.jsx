@@ -7,6 +7,12 @@ const fillTool = (selectedColor) => {
     let area = null;
     tool.name = 'fillTool';
     tool.color = selectedColor;
+    tool.reset = function () {
+        if (area) area.remove();
+        dragging = false;
+        startRect = null;
+        area = null;
+    };
     tool.setColor = function (color) {
         this.color = color;
     }

@@ -42,7 +42,7 @@ const ColorPicker = ({ selectedColor, setSelectedColor }) => {
     );
   };
 
-const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSelectedColor, gridVisible, setGridVisible}) => {
+const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSelectedColor, gridVisible, setGridVisible, onClearDesign}) => {
     const setGridSize = (value)=> setBeadParameters({...beadParameters, gridSize: value});
     const setBeadSpacing = (value)=>setBeadParameters({...beadParameters, beadSpacing: value});
     const setCreateGridType = (value)=>setBeadParameters({...beadParameters, createGridType: value});
@@ -142,7 +142,7 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
         {/* TOOLS */}
         <ToolBarSubMenu id="Tools" name='Tools'>
           <LabeledParameter label='Controls'>
-            <PaperControls selectedColor={selectedColor} beadParameters={beadParameters} />
+            <PaperControls selectedColor={selectedColor} beadParameters={beadParameters} onClearDesign={onClearDesign} />
           </LabeledParameter>
           <LabeledParameter label='Zoom'>
             <ZoomControls />

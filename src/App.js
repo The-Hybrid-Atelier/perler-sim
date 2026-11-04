@@ -5,24 +5,10 @@ import { DirectManipulation} from './interactions/DirectManipulation.jsx';
 import { useEffect, useState } from 'react';
 import {PaperCanvas} from './components/PaperCanvas.jsx';
 import {View} from './components/View.jsx';
-import { BEAD_COLORS, getApiBaseUrl} from './AppConfig.jsx';
+import { BEAD_COLORS, defaultBeadParameters, getApiBaseUrl} from './AppConfig.jsx';
 import { Menus } from './components/Menus.jsx';
 
 const START_SCREEN = "paper";
-const defaultBeadParameters = {
-  name: "bead",
-  outer_radius: (4.5/2),
-  inner_radius: ((4.5/2) - (0.79)),
-  gridSize: 5,
-  beadSpacing: 0.5,
-  createGridType: 'square',
-  fillColor: BEAD_COLORS[0],
-  strokeColor: BEAD_COLORS[0],
-  strokeWidth: 0,
-  selectionStrokeWidth: 1,
-  thickness: (0.79),
-  beadHeight: 5.2
-};
 
 function LandingPage({ authError, onSignIn }) {
   return (
@@ -327,12 +313,21 @@ function App() {
   const [appScreen, setScreen] = useState(START_SCREEN);
   const [paperReady, setPaperReady] = useState(false);
   const [selectedColor, setSelectedColor] = useState(BEAD_COLORS[0]);
-  const [beadParameters, setBeadParameters] = useState(defaultBeadParameters);
+  const [beadParameters, setBeadParameters] = useState(() => ({ ...defaultBeadParameters }));
   const [gridVisible, setGridVisible] = useState(true);
+  const [resetVersion, setResetVersion] = useState(0);
+
   const [authStatus, setAuthStatus] = useState('loading');
   const [currentUser, setCurrentUser] = useState(null);
   const [authError, setAuthError] = useState(false);
   const apiBase = getApiBaseUrl();
+
+  const clearDesign = () => {
+    setBeadParameters({ ...defaultBeadParameters });
+    setSelectedColor(defaultBeadParameters.fillColor);
+    setGridVisible(true);
+    setResetVersion(version => version + 1);
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -424,6 +419,7 @@ function App() {
                 setSelectedColor={setSelectedColor}
                 gridVisible={gridVisible}
                 setGridVisible={setGridVisible}
+                onClearDesign={clearDesign}
               />
           }
         </aside>
@@ -447,6 +443,7 @@ function App() {
                 paperReady={paperReady}
                 selectedColor={selectedColor}
                 beadParametersMM={beadParameters}
+                resetVersion={resetVersion}
                 gridVisible={gridVisible}
               />
 

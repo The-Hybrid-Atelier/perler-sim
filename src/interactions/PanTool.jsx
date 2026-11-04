@@ -5,6 +5,9 @@ const panTool = (selectedColor) => {
         name: 'panTool',
         color: selectedColor,
         lastPoint: null,
+        reset: function () {
+            this.lastPoint = null;
+        },
         setColor: function (color) {
             this.color = color;
         },

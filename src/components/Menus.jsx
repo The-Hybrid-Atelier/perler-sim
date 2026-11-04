@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 // STYLE LIBRARIES
 import { Button, ButtonGroup, Label, Input} from 'semantic-ui-react';
-import { FaRegSquare, FaRegCircle } from "react-icons/fa"; 
+import { FaRegSquare, FaRegCircle, FaEraser } from "react-icons/fa";
 import { FiHexagon } from "react-icons/fi";
 import { LuPaintBucket } from "react-icons/lu";
 import { IoBrushOutline } from "react-icons/io5";
@@ -50,14 +50,20 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
     const setBeadHeight = (value) => setBeadParameters({...beadParameters, beadHeight: value});
     const [currentTool, setCurrentTool] = useState('beadTool');
     const spaceRestoreTool = useRef('beadTool');
+    const [isEraseToggled, setIsEraseToggled] = useState(false);
+    const [isShiftHeld, setIsShiftHeld] = useState(false);
+    const isEraseActive = isEraseToggled || isShiftHeld;
+    // Paper tools live outside React; read the current mode without recreating them.
+    const eraseActiveRef = useRef(isEraseActive);
+    eraseActiveRef.current = isEraseActive;
     const gridVisibilityValue = Number(gridVisible);
     const isGridVisible = gridVisibilityValue > 0;
 
     useEffect(() => { 
       if(paper){
-        const lineT = lineTool(selectedColor);
+        const lineT = lineTool(selectedColor, () => eraseActiveRef.current);
         const fillT = fillTool(selectedColor);
-        const beadT = beadTool(selectedColor);
+        const beadT = beadTool(selectedColor, () => eraseActiveRef.current);
         const panT = panTool(selectedColor);
       }
     }, [paper]);
@@ -71,6 +77,46 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
         });
       }
     }, [paper, currentTool]);
+
+    useEffect(() => {
+      const heldShiftKeys = new Set();
+      const isEditing = (target) => target instanceof Element &&
+        Boolean(target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])'));
+      const resetShift = () => {
+        heldShiftKeys.clear();
+        setIsShiftHeld(false);
+      };
+      const onKeyDown = (event) => {
+        if (event.key === 'Shift' && !isEditing(event.target)) {
+          heldShiftKeys.add(event.code || event.key);
+          setIsShiftHeld(true);
+        }
+      };
+      const onKeyUp = (event) => {
+        if (event.key === 'Shift') {
+          heldShiftKeys.delete(event.code || event.key);
+          setIsShiftHeld(heldShiftKeys.size > 0);
+        }
+      };
+      const onFocusIn = (event) => {
+        if (isEditing(event.target)) resetShift();
+      };
+      const onVisibilityChange = () => {
+        if (document.hidden) resetShift();
+      };
+      window.addEventListener('keydown', onKeyDown);
+      window.addEventListener('keyup', onKeyUp);
+      window.addEventListener('blur', resetShift);
+      document.addEventListener('focusin', onFocusIn);
+      document.addEventListener('visibilitychange', onVisibilityChange);
+      return () => {
+        window.removeEventListener('keydown', onKeyDown);
+        window.removeEventListener('keyup', onKeyUp);
+        window.removeEventListener('blur', resetShift);
+        document.removeEventListener('focusin', onFocusIn);
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+      };
+    }, []);
 
     useEffect(() => {
       const onKeyDown = (e) => {
@@ -109,6 +155,11 @@ const Menus = ({paper, beadParameters, setBeadParameters, selectedColor, setSele
           </LabeledParameter>
           <LabeledParameter label='BeadPlace' hotkey='P'>
             <Button aria-label='Bead Place' color={currentTool === "beadTool" ? "green" : ""} icon onClick={() => setCurrentTool("beadTool")}><PiCylinderFill /></Button>
+          </LabeledParameter>
+          <LabeledParameter label='Erase' hotkey='Shift'>
+            <Button aria-label='Erase' toggle active={isEraseActive} aria-keyshortcuts='Shift'
+              color={isEraseActive ? "green" : undefined} icon
+              onClick={() => setIsEraseToggled(previous => !previous)}><FaEraser /></Button>
           </LabeledParameter>
           <LabeledParameter label='Pan' hotkey='Space'>
             <Button aria-label='Pan' color={currentTool === "panTool" ? "green" : ""} icon onClick={() => setCurrentTool("panTool")}><IoMoveSharp /></Button>

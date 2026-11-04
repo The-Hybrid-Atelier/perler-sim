@@ -1,6 +1,6 @@
 import paper from 'paper';
 
-const lineTool = (selectedColor) => {
+const lineTool = (selectedColor, isEraseActive = (event) => event.modifiers.shift) => {
     return new paper.Tool({
         name: 'brushTool',
         color: selectedColor,
@@ -19,7 +19,7 @@ const lineTool = (selectedColor) => {
             const color = this.color;
             this.path.add(event.point);
 
-            const beads = paper.project.getItems({name: 'bead', visible: event.modifiers.shift});
+            const beads = paper.project.getItems({name: 'bead', visible: isEraseActive(event)});
             beads.forEach(bead => {
                 if (this.path.intersects(bead)) {
                     bead.visible = !bead.visible;

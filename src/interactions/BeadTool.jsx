@@ -16,7 +16,7 @@ const changeNearestBeadColor = (paper, clickPoint) => {
   };
 
   
-const beadTool = (selectedColor) => {
+const beadTool = (selectedColor, isEraseActive = (event) => event.modifiers.shift) => {
     return new paper.Tool({
         name: 'beadTool',
         color: selectedColor,
@@ -34,8 +34,8 @@ const beadTool = (selectedColor) => {
                     this.activeBead.visible = true;
                     this.activeBead.fillColor = this.color;
                 }
-                // IF BEAD IS THERE, ONLY REMOVE IT IF SHIFTED
-                else if(this.activeBead.visible && event.modifiers.shift){
+                // IF BEAD IS THERE, ONLY REMOVE IT IN ERASE MODE
+                else if(this.activeBead.visible && isEraseActive(event)){
                     this.activeBead.visible = false;
                     this.activeBead.fillColor = this.color;
                 }

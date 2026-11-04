@@ -13,6 +13,8 @@ Install dependencies:
 Run the web server:
 `npm start`
 
+The editor and SVG/STL exports are available without GitHub sign-in. The admin dashboard still requires an authenticated GitHub organization member.
+
 ## Usage
 
 - Design your fuse bead modules using the interactive tools provided in the web app.

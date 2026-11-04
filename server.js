@@ -43,7 +43,7 @@ loadEnvFile();
 const app = express();
 const PORT = process.env.PORT || 3001;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
-const SERVER_URL = process.env.SERVER_URL || `http://localhost:${PORT}`;
+const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3001';
 const GITHUB_ORG = process.env.GITHUB_ADMIN_ORG || 'The-Hybrid-Atelier';
 const APP_NAME = process.env.APP_NAME || 'perler-sim';
 const SESSION_COOKIE = 'perler_session';
@@ -451,11 +451,13 @@ const serializeAccessEntry = (entry) => ({
   downloads: entry.downloads || defaultDownloads(),
 });
 
-const requireAuth = (req, res, next) => {
+// Public editor exports may still record activity for an existing GitHub session.
+const optionalSession = (req, res, next) => {
   const session = getSession(req);
 
   if (!session) {
-    return res.status(401).json({ error: 'Authentication required' });
+    req.session = {};
+    return next();
   }
 
   touchSession(session);
@@ -610,7 +612,7 @@ app.get('/api/auth/session', (req, res) => {
   const session = getSession(req);
 
   if (!session) {
-    return res.status(401).json({ authenticated: false });
+    return res.json({ authenticated: false });
   }
 
   touchSession(session);
@@ -678,14 +680,14 @@ app.get('/api/admin/metrics', requireAdmin, async (req, res) => {
   res.json(metrics || getMetricsFromMemory());
 });
 
-app.post('/api/downloads/svg', requireAuth, async (req, res) => {
+app.post('/api/downloads/svg', optionalSession, async (req, res) => {
   await recordDownload(req.session, 'svg', req.body?.filename || null);
   res.json({
     downloads: req.session.accessEntry?.downloads || defaultDownloads(),
   });
 });
 
-app.post('/convert-svg-to-stl', requireAuth, upload.single('svg'), (req, res) => {
+app.post('/convert-svg-to-stl', optionalSession, upload.single('svg'), (req, res) => {
   if (!req.file || req.file.size === 0) {
     return res.status(400).send('Uploaded file is empty');
   }

@@ -24,22 +24,6 @@ const defaultBeadParameters = {
   beadHeight: 5.2
 };
 
-function LandingPage({ authError, onSignIn }) {
-  return (
-    <main id="main-content" className="landing-page" tabIndex="-1">
-      <section className="landing-panel" aria-labelledby="landing-title">
-        <h2 id="landing-title">Beadle</h2>
-        {authError &&
-          <p className="auth-error" role="alert">GitHub sign-in did not finish. Try again.</p>
-        }
-        <button className="github-sign-in" onClick={onSignIn}>
-          Continue with GitHub
-        </button>
-      </section>
-    </main>
-  );
-}
-
 const formatDuration = (durationMs) => {
   const totalSeconds = Math.max(0, Math.floor(durationMs / 1000));
   const hours = Math.floor(totalSeconds / 3600);
@@ -329,15 +313,12 @@ function App() {
   const [selectedColor, setSelectedColor] = useState(BEAD_COLORS[0]);
   const [beadParameters, setBeadParameters] = useState(defaultBeadParameters);
   const [gridVisible, setGridVisible] = useState(true);
-  const [authStatus, setAuthStatus] = useState('loading');
   const [currentUser, setCurrentUser] = useState(null);
-  const [authError, setAuthError] = useState(false);
   const apiBase = getApiBaseUrl();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.has('auth')) {
-      setAuthError(true);
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
@@ -351,18 +332,12 @@ function App() {
         return response.json();
       })
       .then(session => {
-        setCurrentUser(session.user);
-        setAuthStatus('authenticated');
+        setCurrentUser(session.user || null);
       })
       .catch(() => {
         setCurrentUser(null);
-        setAuthStatus('anonymous');
       });
   }, [apiBase]);
-
-  const signInWithGitHub = () => {
-    window.location.href = `${apiBase}/auth/github`;
-  };
 
   const logout = async () => {
     await fetch(`${apiBase}/api/auth/logout`, {
@@ -370,9 +345,10 @@ function App() {
       credentials: 'include',
     });
     setCurrentUser(null);
-    setAuthStatus('anonymous');
-    setScreen(START_SCREEN);
-    setPaperReady(false);
+    if (appScreen !== START_SCREEN) {
+      setScreen(START_SCREEN);
+      setPaperReady(false);
+    }
   };
 
   const openDashboard = () => {
@@ -385,17 +361,16 @@ function App() {
     setScreen(START_SCREEN);
   };
 
-  const isAuthenticated = authStatus === 'authenticated';
-
   return (
     <div className="App">
       <header>
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <h1 className="visually-hidden">Beadle</h1>
       </header>
-      {isAuthenticated &&
-        <aside className="controls fh" aria-label="Design controls">
-          <UserSession user={currentUser} onLogout={logout} onOpenDashboard={openDashboard} />
+      <aside className="controls fh" aria-label="Design controls">
+          {currentUser &&
+            <UserSession user={currentUser} onLogout={logout} onOpenDashboard={openDashboard} />
+          }
           {appScreen === START_SCREEN &&
             <Menus
                 paper={paperReady}
@@ -407,20 +382,11 @@ function App() {
                 setGridVisible={setGridVisible}
               />
           }
-        </aside>
-      }
-      {authStatus === 'loading' &&
-        <main id="main-content" className="landing-page" tabIndex="-1">
-          <p>Checking GitHub sign-in...</p>
-        </main>
-      }
-      {authStatus === 'anonymous' &&
-        <LandingPage authError={authError} onSignIn={signInWithGitHub} />
-      }
-      {isAuthenticated && currentUser?.isAdmin && appScreen === "dashboard" &&
+      </aside>
+      {currentUser?.isAdmin && appScreen === "dashboard" &&
           <AdminDashboard apiBase={apiBase} currentUser={currentUser} onBack={backToEditor} />
       }
-      {isAuthenticated && appScreen === START_SCREEN &&
+      {appScreen === START_SCREEN &&
           <main id="main-content" className="fw fh" tabIndex="-1">
             <View icon="" goToScreen="" screen={appScreen} setScreen={setScreen}>
               

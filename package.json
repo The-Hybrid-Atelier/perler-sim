@@ -4,12 +4,12 @@
   "private": true,
   "proxy": "http://localhost:3001",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "client": "react-scripts start",
-    "server": "node server.js",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+  "start": "concurrently \"npm run server\" \"npm run client\"",
+  "client": "PORT=3000 react-scripts start",
+  "server": "node server.js",
+  "build": "react-scripts build",
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
